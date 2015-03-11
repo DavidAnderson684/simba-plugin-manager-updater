@@ -4,6 +4,6 @@ if (!defined('ABSPATH')) die('No direct access.');
 
 if (!class_exists('Updraft_Manager_Updater_1_0')) require_once(dirname(__FILE__).'/class-udm-updater.php');
 
-$openinghours_updater = new Updraft_Manager_Updater_1_0('https://www.simbahosting.co.uk/s3', 1, 'woocommerce-opening-hours/opening-hours.php');
+new Updraft_Manager_Updater_1_0('https://example.com/your/WP/mothership/siteurl', 1, 'plugin-dir/plugin-file.php');
 
-#$openinghours_updater->updater->debug = true;
+#$x->updater->debug = true;
