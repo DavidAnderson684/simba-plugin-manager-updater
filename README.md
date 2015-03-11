@@ -8,13 +8,13 @@ This class is an updates checker and UI for WordPress plugins that are hosted us
 
 Your plugin's constructor is a good place to do this.
 
-```include_once('path/to/your/plugin/updater/updater.php');```
+`include_once('path/to/your/plugin/updater/updater.php');`
 
-### 2. Edit the updater/updater.php to point to where your plugins aer hosted
+### 2. Edit the updater/updater.php to point to where your plugins are hosted
 
 updater/updater.php is a very short file. Find this line ...
 
-```new Updraft_Manager_Updater_1_0('https://example.com/your/WP/mothership/homeurl', 1, 'plugin-dir/plugin-file.php');```
+`new Updraft_Manager_Updater_1_0('https://example.com/your/WP/mothership/homeurl', 1, 'plugin-dir/plugin-file.php');`
 
 ... and:
 
