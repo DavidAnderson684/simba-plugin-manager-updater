@@ -6,7 +6,7 @@ It is intended for plugins that require the supply of access credentials (a cust
 
 ## How to use this class
 
-### 1. Add Yahnis Elsts's plugin update class
+### 1. Add Yahnis Elsts' plugin update class
 
 Check out a copy of Yahnis' Elsts' plugin update class, and place it in a subdirectory "puc", relative to where this class is housed.
 
