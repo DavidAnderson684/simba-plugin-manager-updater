@@ -2,11 +2,13 @@
 
 This class is an updates checker and UI for WordPress plugins that are hosted using the Simba Plugin Manager plugin.
 
+It is intended for plugins that require the supply of access credentials (a customer email address and password) to gain access to updates. For plugins that are available to everyone, you should instead use Yahnis Elsts' plugin update class without any modifications: https://github.com/YahnisElsts/plugin-update-checker
+
 ## How to use this class
 
 ### 1. Add Yahnis Elsts's plugin update class
 
-Check out a copy of Yahnis' Elsts's plugin update class, and place it in a subdirectory "puc", relative to where this class is housed.
+Check out a copy of Yahnis' Elsts' plugin update class, and place it in a subdirectory "puc", relative to where this class is housed.
 
 https://github.com/YahnisElsts/plugin-update-checker
 
