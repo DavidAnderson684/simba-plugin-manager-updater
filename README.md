@@ -1,0 +1,1 @@
+# simba-plugin-manager-updater
