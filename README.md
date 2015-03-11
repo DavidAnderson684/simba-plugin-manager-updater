@@ -2,15 +2,21 @@
 
 This class is an updates checker and UI for WordPress plugins that are hosted using the Simba Plugin Manager plugin.
 
-## Using
+## How to use this class
 
-### 1. Include the class in your plugin
+### 1. Add Yahnis Elsts's plugin update class
+
+Check out a copy of Yahnis' Elsts's plugin update class, and place it in a subdirectory "puc", relative to where this class is housed.
+
+https://github.com/YahnisElsts/plugin-update-checker
+
+### 2. Include the class in your plugin
 
 Your plugin's constructor is a good place to do this.
 
 `include_once('path/to/your/plugin/updater/updater.php');`
 
-### 2. Edit the updater/updater.php to point to where your plugins are hosted
+### 3. Edit the updater/updater.php to point to where your plugins are hosted
 
 updater/updater.php is a very short file. Find this line ...
 
