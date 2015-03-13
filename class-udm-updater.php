@@ -37,6 +37,8 @@ class Updraft_Manager_Updater_1_0 {
 
 		if (!file_exists($this->plugin_file)) throw new Exception("Plugin file not found: ".$this->plugin_file);
 
+		if (!function_exists('get_plugin_data')) require_once(ABSPATH.'wp-admin/includes/plugin.php');
+
 		$this->plugin_data = get_plugin_data($this->plugin_file);
 
 		add_action('wp_ajax_udmupdater_ajax', array($this, 'udmupdater_ajax'));
