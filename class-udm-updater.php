@@ -451,7 +451,7 @@ class Updraft_Manager_Updater_1_0 {
 		<div style="margin: 10px;  min-height: 36px;" class="udmupdater_box_<?php echo esc_attr($this->slug);?>">
 			<?php if ($this->is_connected()) { ?>
 			<div style="float: left; margin-right: 14px; margin-top: 4px;">
-				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('You are connected to received updates for %s (login: %s)', 'udmupdater'), $plugin_label, htmlspecialchars($email)), $this->plugin_data); ?></em>: 
+				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('You are connected to receive updates for %s (login: %s)', 'udmupdater'), $plugin_label, htmlspecialchars($email)), $this->plugin_data); ?></em>: 
 			</div>
 			<div class="udmupdater_userpassform udmupdater_userpassform_<?php echo esc_attr($this->slug);?>" style="float:left;">
 				<button class="button button-primary udmupdater-disconnect"><?php _e('Disconnect', 'udmupdater');?></button>
