@@ -521,7 +521,7 @@ class Updraft_Manager_Updater_1_0 {
 			$sinfo['pver'] = $this->plugin_data['Version'];
 		}
 
-		$args['si'] = urlencode(base64_encode(serialize($sinfo)));
+		$args['si2'] = urlencode(base64_encode(json_encode($sinfo)));
 
 		return $args;
 	}
