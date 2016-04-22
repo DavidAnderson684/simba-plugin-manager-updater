@@ -7,6 +7,8 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_0')):
 class Updraft_Manager_Updater_1_0 {
 
+	public $version = '1.0';
+
 	public $relative_plugin_file;
 	public $slug;
 	public $url;
@@ -84,7 +86,7 @@ class Updraft_Manager_Updater_1_0 {
 
 			$options = $this->get_option($this->option_name);
 
-			$result = wp_remote_post($this->url.'&udm_action=claimaddon&slug='.urlencode($_POST['slug']).'&e='.urlencode($_POST['email']),
+			$result = wp_remote_post($this->url.'&udm_action=claimaddon&slug='.urlencode($this->slug).'&e='.urlencode($_POST['email']),
 				array(
 					'timeout' => 10,
 					'body' => array(
@@ -93,7 +95,7 @@ class Updraft_Manager_Updater_1_0 {
 						'sid' => $this->siteid(),
 						'sn' => base64_encode(get_bloginfo('name')),
 						'su' => base64_encode(home_url()),
-						'slug' => $_POST['slug']
+						'slug' => $this->slug
 					)
 				)
 			);
@@ -547,42 +549,6 @@ class Updraft_Manager_Updater_1_0 {
 		return $updates;
 	}
 
-	// Note current code
-// 	public function ajax_claimaddon() {
-// 
-// 		$nonce = (empty($_REQUEST['nonce'])) ? "" : $_REQUEST['nonce'];
-// 		if (! wp_verify_nonce($nonce, 'udmupdater-nonce') || empty($_POST['key'])) die('Security check');
-// 
-// 		$options = $this->get_option($this->option_name);
-// 
-// 		// The 'password' encoded here is the updraftplus.com password. See here: http://updraftplus.com/faqs/tell-me-about-my-updraftplus-com-account/
-// 		$result = wp_remote_post($this->url.'&udm_action=claimaddon',
-// 			array(
-// 				'timeout' => 10,
-// 				'body' => array(
-// 					'e' => $options['email'],
-// 					'p' => base64_encode($options['password']),
-// 					'sid' => $this->siteid(),
-// 					'sn' => base64_encode(get_bloginfo('name')),
-// 					'su' => base64_encode(home_url()),
-// 					'key' => $_POST['key']
-// 				)
-// 			)
-// 		);
-// 
-// 		if (is_array($result) && isset($result['body'])) {
-// 			echo $result['body'];
-// 		} elseif (is_wp_error($result)) {
-// 			echo __('Errors occurred:','udmupdater').'<br>';
-// 			show_message($result);
-// 		} else {
-// 			echo __('Errors occurred:','udmupdater').' '.htmlspecialchars(serialize($result));
-// 		}
-//  
-// 		die;
-// 
-// 	}
-
 	protected function siteid() {
 		// This used to be keyed off the plugin slug - I see no reason for that
 // 		$use_slug = $this->slug;
@@ -594,80 +560,6 @@ class Updraft_Manager_Updater_1_0 {
 		}
 		return $sid;
 	}
-
-	// Unused
-	// Returns either true or a WP_Error
-// 	public function connection_status() {
-// 
-// 		$options = $this->get_option($this->option_name);
-// 
-// 		// Username and password set up?
-// 		if (empty($options['email'])) return new WP_Error('blank_details', 'You need to supply both an email address and a password');
-// 
-// 		// Hash will change if the account changes (password change is handled by the options filter)
-// 		$ehash = md5($options['email']);
-// 		$connect_trans_name = substr($this->slug.'_ct_'.$ehash, 0, 45);
-// 		$trans = get_site_transient($connect_trans_name);
-// 
-// 		// In debug mode, we don't cache
-// 		if ($this->debug !== true && !isset($_GET['udm_refresh']) && is_array($trans)) return true;
-// 
-// 		$connect = $this->connect($options['email'], $options['password']);
-// 
-// 		if (is_wp_error($connect)) return $connect;
-// 		if (false === $connect) return new WP_Error('failed_connection', __('We failed to successfully connect', 'udmupdater'));
-// 
-// 		if (!is_bool($connect)) return new WP_Error('bad_response', __('There was a response, but we did not understand it', 'udmupdater'));
-// 
-// 		return true;
-// 	}
-
-	// Unused
-	// Returns either true (in which case the add-ons array is populated), or a WP_Error
-// 	public function connect($email, $password) {
-// 
-// 		// Used previous response, if available
-// 		if (is_array($this->user_addons) && count($this->user_addons)>0) return true;
-// 
-// 		// The 'password' encoded here is the mothership WP login password.
-// 		$result = wp_remote_post($this->url.'&udm_action=connect',
-// 			array(
-// 				'timeout' => 10,
-// 				'body' => array(
-// 					'e' => $email,
-// 					'p' => base64_encode($password),
-// 					'sid' => $this->siteid(),
-// 					'sn' => base64_encode(get_bloginfo('name')),
-// 					'su' => base64_encode(home_url())
-// 				) 
-// 			)
-// 		);
-// 
-// 		if (is_wp_error($result) || false === $result) return $result;
-// 
-// 		$response = maybe_unserialize($result['body']);
-// 
-// 		if (!is_array($response) || !isset($response['mothership']) || !isset($response['loggedin'])) return new WP_Error('unknown_response', sprintf(__('A response was returned which we could not understand (data: %s)', 'udmupdater'), serialize($response)));
-// 
-// 		$ehash = md5($options['email']);
-// 		$connect_trans_name = substr($this->slug.'_ct_'.$ehash, 0, 45);
-// 
-// 		switch ($response['loggedin']) {
-// 			case 'connected':
-// 				set_site_transient($connect_trans_name, $response, 7200);
-// 				// Now, trigger an update check, since things may have changed
-// 				if ($this->plug_updatechecker) $this->plug_updatechecker->checkForUpdates();
-// 				break;
-// 			case 'authfailed':
-// 				return new WP_Error('authfailed', __('Your email address and password were not recognised', 'udmupdater'));
-// 				delete_site_transient($connect_trans_name);
-// 				break;
-// 			default:
-// 				return new WP_Error('unknown_response', __('A response was returned, but we could not understand it', 'udmupdater'));
-// 				break;
-// 		}
-// 		return true;
-// 	}
 
 }
 endif;
