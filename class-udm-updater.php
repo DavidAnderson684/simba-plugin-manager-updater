@@ -7,7 +7,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_0')):
 class Updraft_Manager_Updater_1_0 {
 
-	public $version = '1.0';
+	public $version = '1.0.1';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -478,6 +478,10 @@ class Updraft_Manager_Updater_1_0 {
 
 	# We want to lessen the number of automatic checks if an update is already known to be available
 	public function puc_check_now($shouldcheck, $lastcheck, $checkperiod) {
+
+		// Skip checks immediately after a WP upgrade. This action has existed since WP 4.4. Since we're just trying to reduce server load spikes when WP core automatic security upgrades happen, that is adequate.
+		if (did_action('pre_auto_update') && apply_filters('udmupdater_skip_after_auto_upgrade', true, $this->slug)) return false;
+
 		global $wp_current_filter;
 		if (true !== $shouldcheck || empty($this->plug_updatechecker) || 0 == $lastcheck || in_array('load-update-core.php', $wp_current_filter) || !defined('DOING_CRON')) return $shouldcheck;
 
