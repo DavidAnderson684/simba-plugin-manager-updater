@@ -54,12 +54,15 @@ class Updraft_Manager_Updater_1_0 {
 		$this->option_name = $this->slug.'_updater_options';
 
 		// Over-ride update mechanism for the plugin
-		if (is_readable($this->ourdir.'/puc/plugin-update-checker.php')) {
+		
+		$puc_dir = file_exists($this->ourdir.'/puc') ? $this->ourdir.'/puc' : $this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker';
+		
+		if (is_readable($puc_dir.'/plugin-update-checker.php') || class_exists('PluginUpdateChecker')) {
 
 			$options = $this->get_option($this->option_name);
 			$email = isset($options['email']) ? $options['email'] : '';
 			if ($email) {
-				require_once($this->ourdir.'/puc/plugin-update-checker.php');
+				if (!class_exists('PluginUpdateChecker')) require_once($puc_dir.'/plugin-update-checker.php');
 				if ($auto_backoff) add_filter('puc_check_now-'.$this->slug, array($this, 'puc_check_now'), 10, 3);
 
 				add_filter('puc_retain_fields-'.$this->slug, array($this, 'puc_retain_fields'));
