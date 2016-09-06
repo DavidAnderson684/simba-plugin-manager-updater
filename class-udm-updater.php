@@ -4,10 +4,10 @@
 Licence: MIT / GPLv2+
 */
 
-if (!class_exists('Updraft_Manager_Updater_1_0')):
-class Updraft_Manager_Updater_1_0 {
+if (!class_exists('Updraft_Manager_Updater_1_1')):
+class Updraft_Manager_Updater_1_1 {
 
-	public $version = '1.0.2';
+	public $version = '1.1.0';
 
 	public $relative_plugin_file;
 	public $slug;
