@@ -38,4 +38,4 @@ updater/updater.php is a very short file. Find this line ...
 
 3. Change the plugin path to be the path (relative to the WP plugin directory, by default wp-content/plugins) to your plugin's main file.
 
-More information to come.
+That's it!
