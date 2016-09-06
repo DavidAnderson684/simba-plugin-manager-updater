@@ -57,7 +57,7 @@ class Updraft_Manager_Updater_1_1 {
 		
 		$puc_dir = file_exists($this->ourdir.'/puc') ? $this->ourdir.'/puc' : $this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker';
 		
-		$update_checker_class = 'PluginUpdateChecker_3_1';
+		$update_checker_class = 'PluginUpdateChecker';
 		
 		if (is_readable($puc_dir.'/plugin-update-checker.php') || class_exists($update_checker_class)) {
 
