@@ -57,18 +57,21 @@ class Updraft_Manager_Updater_1_1 {
 		
 		$puc_dir = file_exists($this->ourdir.'/puc') ? $this->ourdir.'/puc' : $this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker';
 		
-		if (is_readable($puc_dir.'/plugin-update-checker.php') || class_exists('PluginUpdateChecker')) {
+		$update_checker_class = 'PluginUpdateChecker_3_1';
+		
+		if (is_readable($puc_dir.'/plugin-update-checker.php') || class_exists($update_checker_class)) {
 
 			$options = $this->get_option($this->option_name);
 			$email = isset($options['email']) ? $options['email'] : '';
 			if ($email) {
-				if (!class_exists('PluginUpdateChecker')) require_once($puc_dir.'/plugin-update-checker.php');
+
+				if (!class_exists($update_checker_class)) require_once($puc_dir.'/plugin-update-checker.php');
 				if ($auto_backoff) add_filter('puc_check_now-'.$this->slug, array($this, 'puc_check_now'), 10, 3);
 
 				add_filter('puc_retain_fields-'.$this->slug, array($this, 'puc_retain_fields'));
 // 				add_filter('puc_request_info_options-'.$this->slug, array($this, 'puc_request_info_options'));
 
-				$this->plug_updatechecker = new PluginUpdateChecker($this->url, WP_PLUGIN_DIR.'/'.$this->relative_plugin_file, $this->slug, $interval_hours);
+				$this->plug_updatechecker = new $update_checker_class($this->url, WP_PLUGIN_DIR.'/'.$this->relative_plugin_file, $this->slug, $interval_hours);
 				$this->plug_updatechecker->addQueryArgFilter(array($this, 'updater_queryargs_plugin'));
 				if ($this->debug) $this->plug_updatechecker->debugMode = true;
 			}
