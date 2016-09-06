@@ -1,0 +1,5 @@
+{
+    "require": {
+        "yahnis-elsts/plugin-update-checker": "*"
+    }
+}
