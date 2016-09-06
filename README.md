@@ -8,9 +8,15 @@ It is intended for plugins that require the supply of access credentials (a cust
 
 ### 1. Add Yahnis Elsts' plugin update class
 
-Check out a copy of Yahnis' Elsts' plugin update class, and place it in a subdirectory "puc", relative to where this class is housed.
+Check out a copy of Yahnis' Elsts' plugin update class (https://github.com/YahnisElsts/plugin-update-checker). You can do this in two ways:
 
-https://github.com/YahnisElsts/plugin-update-checker
+#### a. Via composer
+
+Whilst in this component's directory (where the composer.json file is), run "composer install". This will then create a sub-directory "vendor", with the plugin update class in vendor/yahnis-elsts/plugin-update-checker. It will be looked for there. You can keep it up to date with "composer update".
+
+#### b. Or, manually
+
+If you prefer to download manually, then download from https://github.com/YahnisElsts/plugin-update-checker and you can place it in a subdirectory "puc", relative to where this class is housed, such that the plugin updater class is in puc/plugin-update-checker.php. It will be looked for there if the composer directory does not exist.
 
 ### 2. Include the class in your plugin
 
