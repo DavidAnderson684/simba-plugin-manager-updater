@@ -8,7 +8,7 @@ It is intended for plugins that require the supply of access credentials (a cust
 
 ### 1. Add Yahnis Elsts' plugin update class
 
-Check out a copy of Yahnis' Elsts' plugin update class, version 3.1 (https://github.com/YahnisElsts/plugin-update-checker). You can do this in two ways:
+Check out a copy of Yahnis' Elsts' plugin update class, version (https://github.com/YahnisElsts/plugin-update-checker). You can do this in two ways:
 
 #### a. Via composer
 
