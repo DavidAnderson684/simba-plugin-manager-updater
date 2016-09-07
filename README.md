@@ -38,7 +38,7 @@ If you prefer to download manually, then download from https://github.com/Yahnis
 
 Now that you're installed, you need to include the class. Your plugin's constructor is a good place to do this.
 
-If you are using composer, you should copy the updater.php file into your plugin (if you edit the bundled copy in-place, then it will get over-written when you update), in the same directory as your composer.json and vendor directory are.
+If you are using composer, you should copy the updater.php file into your plugin (if you edit the bundled copy in-place, then it will get over-written when you update), in the same directory as your composer.json and vendor directory are (or if otherwise, modify the paths mentioned in it).
 
 `include_once('path/to/your/plugin/updater.php');`
 
@@ -46,7 +46,7 @@ If you are using composer, you should copy the updater.php file into your plugin
 
 updater.php is a very short file. Find this line ...
 
-`new Updraft_Manager_Updater_1_0('https://example.com/your/WP/mothership/homeurl', 1, 'plugin-dir/plugin-file.php');`
+`new Updraft_Manager_Updater_1_2('https://example.com/your/WP/mothership/homeurl', 1, 'plugin-dir/plugin-file.php');`
 
 ... and:
 
