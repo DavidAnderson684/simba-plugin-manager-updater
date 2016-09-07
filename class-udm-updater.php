@@ -4,10 +4,10 @@
 Licence: MIT / GPLv2+
 */
 
-if (!class_exists('Updraft_Manager_Updater_1_1')):
-class Updraft_Manager_Updater_1_1 {
+if (!class_exists('Updraft_Manager_Updater_1_2')):
+class Updraft_Manager_Updater_1_2 {
 
-	public $version = '1.1.1';
+	public $version = '1.2.0';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -32,7 +32,7 @@ class Updraft_Manager_Updater_1_1 {
 		$this->url = trailingslashit($mothership).'?muid='.$muid;
 		$this->muid = $muid;
 		$this->debug = $debug;
-		$this->ourdir = dirname(__FILE__);
+		$this->ourdir = __DIR__;
 
 		# This needs to exact match PluginUpdateChecker's view
 		$this->plugin_file = trailingslashit(WP_PLUGIN_DIR).$relative_plugin_file;
@@ -55,15 +55,17 @@ class Updraft_Manager_Updater_1_1 {
 
 		// Over-ride update mechanism for the plugin
 		
-		$puc_dir = file_exists($this->ourdir.'/puc') ? $this->ourdir.'/puc' : $this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker';
+		$puc_dir = file_exists($this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker') ? $this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker' : ( file_exists(dirname(dirname($this->ourdir).'/yahnis-elsts/plugin-update-checker')) ? dirname(dirname($this->ourdir).'/yahnis-elsts/plugin-update-checker') : $this->ourdir.'/puc');
 		
-		if (is_readable($puc_dir.'/plugin-update-checker.php')) {
+		if (is_readable($puc_dir.'/plugin-update-checker.php') || class_exists('PucFactory')) {
 
 			$options = $this->get_option($this->option_name);
 			$email = isset($options['email']) ? $options['email'] : '';
 			if ($email) {
 
-				require_once($puc_dir.'/plugin-update-checker.php');
+				// Load the file even if the PucFactory class is already around, as this may get us a later version / avoid a really old + incompatible one
+				if (file_exists($puc_dir.'/plugin-update-checker.php')) include_once($puc_dir.'/plugin-update-checker.php');
+				
 				if ($auto_backoff) add_filter('puc_check_now-'.$this->slug, array($this, 'puc_check_now'), 10, 3);
 
 				add_filter('puc_retain_fields-'.$this->slug, array($this, 'puc_retain_fields'));

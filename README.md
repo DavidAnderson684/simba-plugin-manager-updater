@@ -6,7 +6,23 @@ It is intended for plugins that require the supply of access credentials (a cust
 
 ## How to use this class
 
-### 1. Add Yahnis Elsts' plugin update class
+There are various ways you can install this class, depending on how much composer you want to use or not use.
+
+### 1. Install: Method one: Via composer
+
+If you do not already have a composer.json file, then create one:
+
+```{
+    "require": {
+        "davidanderson684/simba-plugin-manager-updater": "*"
+    }
+}```
+
+If you already have one, then just add davidanderson684/simba-plugin-manager-updater to the list of requirements (remember to keep the JSON valid, of course).
+
+Then, in the same directory, run "composer update" (assuming you already have composer installed).
+
+### 1. Install: Method two: Less composer, or entirely manually
 
 Check out a copy of Yahnis' Elsts' plugin update class, version (https://github.com/YahnisElsts/plugin-update-checker). You can do this in two ways:
 
@@ -20,13 +36,15 @@ If you prefer to download manually, then download from https://github.com/Yahnis
 
 ### 2. Include the class in your plugin
 
-Your plugin's constructor is a good place to do this.
+Now that you're installed, you need to include the class. Your plugin's constructor is a good place to do this.
 
-`include_once('path/to/your/plugin/updater/updater.php');`
+If you are using composer, you should copy the updater.php file into your plugin (if you edit the bundled copy in-place, then it will get over-written when you update), in the same directory as your composer.json and vendor directory are.
 
-### 3. Edit the updater/updater.php to point to where your plugins are hosted
+`include_once('path/to/your/plugin/updater.php');`
 
-updater/updater.php is a very short file. Find this line ...
+### 3. Edit updater.php to point to where your plugins are hosted
+
+updater.php is a very short file. Find this line ...
 
 `new Updraft_Manager_Updater_1_0('https://example.com/your/WP/mothership/homeurl', 1, 'plugin-dir/plugin-file.php');`
 
