@@ -16,6 +16,19 @@ if (!class_exists('Updraft_Manager_Updater_1_2')) {
 	}
 }
 
-new Updraft_Manager_Updater_1_2('https://example.com/your/WP/mothership/siteurl', 1, 'plugin-dir/plugin-file.php');
-
+if(isset($simba_update_url) &&
+	isset($simba_update_user_id) && 
+	isset($simba_update_plugin_name) 
+){ 
+	new Updraft_Manager_Updater_1_2($simba_update_url, $simba_update_user_id, $simba_update_plugin_name); 
+}else{
+	add_action( 'admin_notices', 'simba_plugin_manager_updater_config_failed' );
+	function simba_plugin_manager_updater_config_failed() {	
+	?>
+		<div class="notice notice-error is-dismissible">
+			<p><?php _e( 'Simba update manager variables not set', 'updraftcentral-premium' ); ?></p>
+		</div>
+	<?php
+	}
+}
 // $x->updater->debug = true;
