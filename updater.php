@@ -2,6 +2,9 @@
 
 if (!defined('ABSPATH')) die('No direct access.');
 
+/* This file gives an example of how to use the updater class.
+You will want to copy this file into your project, and adapt the parameters to suit. */
+
 $possible_locations = array(
 	__DIR__.'/class-udm-updater.php',
 	__DIR__.'/vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php'
