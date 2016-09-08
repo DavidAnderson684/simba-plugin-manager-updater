@@ -52,7 +52,7 @@ updater.php is a very short file. Find this line ...
 
 1. Change it to point to the home URL of your WordPress site that is hosting the plugin (i.e. that is running the Simba Plugin Manager).
 
-2. Change the 1 to be the user ID of the user on your WordPress plugin-distributing site who is hosting this plugin (i.e. the user ID loggin into Simba Plugin Manager to provide updates of this plugin).
+2. Change the 1 to be the user ID of the user on your WordPress plugin-distributing site who is hosting this plugin (i.e. the user ID logging into Simba Plugin Manager to provide updates of this plugin).
 
 3. Change the plugin path to be the path (relative to the WP plugin directory, by default wp-content/plugins) to your plugin's main file.
 
