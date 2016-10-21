@@ -16,6 +16,10 @@ if (!class_exists('Updraft_Manager_Updater_1_2')) {
 	}
 }
 
-new Updraft_Manager_Updater_1_2('https://example.com/your/WP/mothership/siteurl', 1, 'plugin-dir/plugin-file.php');
+try {
+	new Updraft_Manager_Updater_1_2('https://example.com/your/WP/mothership/siteurl', 1, 'plugin-dir/plugin-file.php');
+} catch (Exception $e) {
+	error_log($e->getMessage().' at '.$e->getFile().' line '.$e->getLine());
+}
 
 // $x->updater->debug = true;
