@@ -4,10 +4,10 @@
 Licence: MIT / GPLv2+
 */
 
-if (!class_exists('Updraft_Manager_Updater_1_2')):
-class Updraft_Manager_Updater_1_2 {
+if (!class_exists('Updraft_Manager_Updater_1_3')):
+class Updraft_Manager_Updater_1_3 {
 
-	public $version = '1.2.0';
+	public $version = '1.3.0';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -22,6 +22,8 @@ class Updraft_Manager_Updater_1_2 {
 
 	public $plug_updatechecker;
 
+	private $allow_auto_updates = true;
+	
 	private $option_name;
 	private $admin_notices = array();
 
@@ -82,8 +84,23 @@ class Updraft_Manager_Updater_1_2 {
 		add_action("after_plugin_row_$relative_plugin_file", array($this, 'after_plugin_row'), 10, 2 );
 		add_action('load-plugins.php', array($this, 'load_plugins_php'));
 		add_action('core_upgrade_preamble', array($this, 'core_upgrade_preamble'));
+		
+		add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 10, 2);
 	}
 
+	public function auto_update_plugin($update, $item) {
+
+		if (!isset($item->slug) || $item->slug != $this->slug || !$this->allow_auto_updates) return $update;
+		
+		$options = $this->get_option($this->option_name);
+
+		if (is_array($options) && !empty($options['auto_update'])) $update = true;
+		
+		if ($this->debug) error_log("udm_updater: ".$this->slug." auto update decision: ".$update);
+		
+		return $update;
+	}
+	
 	public function udmupdater_ajax() {
 		if (empty($_REQUEST['nonce']) || empty($_REQUEST['subaction']) || !wp_verify_nonce($_REQUEST['nonce'], 'udmupdater-ajax-nonce')) die('Security check.');
 
@@ -186,10 +203,26 @@ class Updraft_Manager_Updater_1_2 {
 		} elseif ('dismissexpiry' == $_REQUEST['subaction']) {
 
 			$option = $this->get_option($this->option_name);
-			if (!is_array($option)) $option=array();
+			if (!is_array($option)) $option = array();
 			$option['dismissed_until'] = time() + 28*86400;
 			$this->update_option($this->option_name, $option);
+			
+		} elseif ('change_auto_update' == $_REQUEST['subaction']) {
+		
+			$auto_update = empty($_REQUEST['auto_update']) ? false : true;
+			
+			$option = $this->get_option($this->option_name);
+			if (!is_array($option)) $option = array();
+			$option['auto_update'] = $auto_update;
+			$this->update_option($this->option_name, $option);
+			
+			echo json_encode(array(
+				'code' => $auto_update ? 'active' : 'inactive',
+			));
+		
 		}
+		
+		die;
 	}
 
 	public function admin_menu() {
@@ -403,6 +436,45 @@ class Updraft_Manager_Updater_1_2 {
 					return false;
 				});
 
+				$('#udmupdater_autoupdate_<?php echo esc_js($this->slug);?>').change(function() {
+					
+					var checked = $(this).is(':checked') ? 1 : 0;
+					
+					var sdata = {
+						action: 'udmupdater_ajax',
+						subaction: 'change_auto_update',
+						nonce: nonce,
+						auto_update: checked,
+						userid: <?php echo $this->muid;?>,
+						slug: '<?php echo esc_js($this->slug);?>'
+					}
+					
+					var button = this;
+					
+					$(this).prop('disabled', true);
+					
+					$.post(ajaxurl, sdata, function(response, data) {
+						$(button).prop('disabled', false);
+						try {
+							resp = $.parseJSON(response);
+							if (resp.hasOwnProperty('code')) {
+								if ('active' == resp.code) {
+									alert('<?php echo esc_js(__('When updates to this plugin are available, they will be automatically installed.', 'udmupdater'));?>');
+								} else {
+									alert('<?php echo esc_js(__('When updates to this plugin are available, they will not be automatically installed.', 'udmupdater'));?>');
+								}
+							} else {
+								alert('<?php echo esc_js(__('The response from the remote site could not be decoded. (More information is recorded in the browser console).', 'udmupdater'));?>');
+								console.log('No response code found');
+								console.log(resp);
+							}
+						} catch (e) {
+							alert('<?php echo esc_js(__('The response from the remote site could not be decoded. (More information is recorded in the browser console).', 'udmupdater'));?>');
+							console.log(e);
+							console.log(response);
+						}
+					});
+				});
 
 				$('.udmupdater_userpassform_<?php echo esc_js($this->slug);?> .udmupdater-disconnect').click(function() {
 					var button = this;
@@ -440,6 +512,14 @@ class Updraft_Manager_Updater_1_2 {
 		</script>
 		<?php
 	}
+	
+	public function set_allow_auto_updates($allow_auto_updates = true) {
+		$this->allow_auto_updates = (bool)$allow_auto_updates;
+	}
+
+	public function get_allow_auto_updates() {
+		return $this->allow_auto_updates;
+	}
 
 	protected function print_plugin_connector_box($type='inline') {
 
@@ -461,7 +541,7 @@ class Updraft_Manager_Updater_1_2 {
 		<div style="margin: 10px;  min-height: 36px;" class="udmupdater_box_<?php echo esc_attr($this->slug);?>">
 			<?php if ($this->is_connected()) { ?>
 			<div style="float: left; margin-right: 14px; margin-top: 4px;">
-				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('You are connected to receive updates for %s (login: %s)', 'udmupdater'), $plugin_label, htmlspecialchars($email)), $this->plugin_data); ?></em>: 
+				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('You are connected to receive updates for %s (login: %s)', 'udmupdater'), $plugin_label, htmlspecialchars($email)), $this->plugin_data, $this->slug); ?></em>: 
 			</div>
 			<div class="udmupdater_userpassform udmupdater_userpassform_<?php echo esc_attr($this->slug);?>" style="float:left;">
 				<button class="button button-primary udmupdater-disconnect"><?php _e('Disconnect', 'udmupdater');?></button>
@@ -475,6 +555,15 @@ class Updraft_Manager_Updater_1_2 {
 				<input type="password" style="width:180px;" placeholder="<?php echo esc_attr(__('Password', 'udmupdater')); ?>" name="password" value="">
 				<button class="button button-primary udmupdater-connect"><?php _e('Connect', 'udmupdater');?></button>
 			</div>
+			<?php } ?>
+			<?php if (apply_filters('udmupdater_autoupdate_form', $this->allow_auto_updates, $this->slug)) {
+				$auto_update = empty($options['auto_update']) ? false : true;
+				$checkbox_id = 'udmupdater_autoupdate_'.$this->slug;
+				?>
+				<div class="udmupdater_autoupdate" style="clear:left;">
+					<input type="checkbox" id="<?php echo esc_attr($checkbox_id);?>" <?php if ($auto_update) echo 'checked="checked"';?>>
+					<label for="<?php echo esc_attr($checkbox_id);?>"><?php echo apply_filters('udmupdater_entercustomerlogin', __('Automatically update as soon as an update becomes available (N.B. other plugins can over-ride this setting).', 'udmupdater'), $this->slug);?></label>
+				</div>
 			<?php } ?>
 		</div>
 		<?php

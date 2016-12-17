@@ -11,3 +11,9 @@ In consequence, it has been necessary to bump the class version major/minor vers
 The 1.2 series supports installing the updater and its dependency via composer. This again means a potential change in directory structure.
 
 In consequence, it has been necessary to bump the class version major/minor version numbers from 1.1 to 1.2. There are no API changes, but it is necessary just to alter the name of the class being accessed in your updater.php file (the file that loads the class) to Updraft_Manager_Updater_1_2.
+
+# Upgrading from 1.2 to 1.3.
+
+There are no API-breaking changes. You can use your code unmodified (beyond altering the class name that you instantiate from Updraft_Manager_Updater_1_2 to Updraft_Manager_Updater_1_3).
+
+New feature (on by default): The 1.3 series allows the user to opt-in to automatic updates of the plugin, using a checkbox on the "Plugins" page. If you do not wish your user to have this facility, then call the method set_allow_auto_updates(false) after instantiating the Updraft_Manager_Updater_1_3 object.
