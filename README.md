@@ -1,6 +1,6 @@
 # Simba Plugin Manager - Updater Class
 
-This class is an updates checker and UI for WordPress plugins that are hosted using the Simba Plugin Manager plugin.
+This class is an updates checker and UI for WordPress plugins that are hosted using [the Simba Plugin Manager plugin](https://wordpress.org/plugins/simba-plugin-updates-manager/).
 
 It is intended for plugins that require the supply of access credentials (a customer email address and password) to gain access to updates. For plugins that are available to everyone, you should instead use Yahnis Elsts' plugin update class without any modifications: https://github.com/YahnisElsts/plugin-update-checker
 
