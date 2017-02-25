@@ -7,7 +7,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_3')):
 class Updraft_Manager_Updater_1_3 {
 
-	public $version = '1.3.0';
+	public $version = '1.3.2';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -34,7 +34,7 @@ class Updraft_Manager_Updater_1_3 {
 		$this->url = trailingslashit($mothership).'?muid='.$muid;
 		$this->muid = $muid;
 		$this->debug = $debug;
-		$this->ourdir = __DIR__;
+		$this->ourdir = dirname(__FILE__);
 
 		# This needs to exact match PluginUpdateChecker's view
 		$this->plugin_file = trailingslashit(WP_PLUGIN_DIR).$relative_plugin_file;
