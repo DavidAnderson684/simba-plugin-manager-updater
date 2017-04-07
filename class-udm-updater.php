@@ -7,7 +7,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_3')):
 class Updraft_Manager_Updater_1_3 {
 
-	public $version = '1.3.2';
+	public $version = '1.3.3';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -492,8 +492,17 @@ class Updraft_Manager_Updater_1_3 {
 						try {
 							resp = $.parseJSON(response);
 							if (resp.hasOwnProperty('code')) {
-								alert('<?php echo esc_js(__('You have successfully disconnected access to updates to this plugin.', 'udmupdater'));?>');
-								$('.udmupdater_box_<?php echo esc_js($this->slug);?>').parent().slideUp();
+							
+								if ('BADAUTH' == resp.code && resp.hasOwnProperty('data') && 'invaliduser' == resp.data) {
+								
+									alert('<?php echo esc_js(__('Your email address was not recognised.', 'udmupdater'));?>');
+								
+								} else {
+							
+									alert('<?php echo esc_js(__('You have successfully disconnected access to updates to this plugin.', 'udmupdater'));?>');
+									$('.udmupdater_box_<?php echo esc_js($this->slug);?>').parent().slideUp();
+								
+								}
 							} else {
 								alert('<?php echo esc_js(__('The response from the remote site could not be decoded. (More information is recorded in the browser console).', 'udmupdater'));?>');
 								console.log('No response code found');
