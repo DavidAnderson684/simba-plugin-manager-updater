@@ -7,7 +7,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_3')):
 class Updraft_Manager_Updater_1_3 {
 
-	public $version = '1.3.4';
+	public $version = '1.3.5';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -390,7 +390,7 @@ class Updraft_Manager_Updater_1_3 {
 							apply_filters('udmupdater_need_credentials_message', 
 								sprintf(
 									__('You need to enter both an email address and a %s', 'udmupdater'),
-									apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->plugin)
+									apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->plugin_data)
 								)
 							)
 						);?>');
@@ -420,7 +420,7 @@ class Updraft_Manager_Updater_1_3 {
 										alert(resp.msg);
 									} else {
 										alert('<?php echo esc_js(sprintf(
-											__('Your email address and %s were not recognised.', 'udmupdater'), apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->plugin)
+											__('Your email address and %s were not recognised.', 'udmupdater'), apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->plugin_data)
 										));?>');
 										console.log(resp);
 									}
@@ -570,7 +570,7 @@ class Updraft_Manager_Updater_1_3 {
 			</div>
 			<div class="udmupdater_userpassform udmupdater_userpassform_<?php echo esc_attr($this->slug);?>" style="float:left;">
 				<input type="text" style="width:180px;" placeholder="<?php echo esc_attr(__('Email', 'udmupdater')); ?>" name="email" value="">
-				<input type="password" style="width:180px;" placeholder="<?php echo esc_attr(ucfirst(apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->plugin))); ?>" name="password" value="">
+				<input type="password" style="width:180px;" placeholder="<?php echo esc_attr(ucfirst(apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->plugin_data))); ?>" name="password" value="">
 				<button class="button button-primary udmupdater-connect"><?php _e('Connect', 'udmupdater');?></button>
 			</div>
 			<?php } ?>
