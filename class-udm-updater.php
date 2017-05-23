@@ -7,7 +7,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_3')):
 class Updraft_Manager_Updater_1_3 {
 
-	public $version = '1.3.5';
+	public $version = '1.3.6';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -56,8 +56,7 @@ class Updraft_Manager_Updater_1_3 {
 		$this->option_name = $this->slug.'_updater_options';
 
 		// Over-ride update mechanism for the plugin
-		
-		$puc_dir = file_exists($this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker') ? $this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker' : ( file_exists(dirname(dirname($this->ourdir).'/yahnis-elsts/plugin-update-checker')) ? dirname(dirname($this->ourdir).'/yahnis-elsts/plugin-update-checker') : $this->ourdir.'/puc');
+		$puc_dir = file_exists($this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker') ? $this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker' : ( file_exists(dirname(dirname($this->ourdir)).'/yahnis-elsts/plugin-update-checker') ? dirname(dirname($this->ourdir)).'/yahnis-elsts/plugin-update-checker' : $this->ourdir.'/puc');
 		
 		if (is_readable($puc_dir.'/plugin-update-checker.php') || class_exists('PucFactory')) {
 
