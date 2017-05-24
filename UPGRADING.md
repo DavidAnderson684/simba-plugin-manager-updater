@@ -17,3 +17,9 @@ In consequence, it has been necessary to bump the class version major/minor vers
 There are no API-breaking changes. You can use your code unmodified (beyond altering the class name that you instantiate from Updraft_Manager_Updater_1_2 to Updraft_Manager_Updater_1_3).
 
 New feature (on by default): The 1.3 series allows the user to opt-in to automatic updates of the plugin, using a checkbox on the "Plugins" page. If you do not wish your user to have this facility, then call the method set_allow_auto_updates(false) after instantiating the Updraft_Manager_Updater_1_3 object.
+
+# Upgrading from 1.3 to 1.4.
+
+There are no API-breaking changes. You can use your code unmodified (beyond altering the class name that you instantiate from Updraft_Manager_Updater_1_3 to Updraft_Manager_Updater_1_43).
+
+New feature: The udmupdater_wp_api_options filter has been added to allow easy modification of parameters to wp_remote_* calls. Note that you may also wish to use the puc_request_info_options-(slug) filter that the base updates checker class uses if you need to catch all calls.

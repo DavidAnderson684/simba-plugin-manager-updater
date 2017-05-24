@@ -10,7 +10,7 @@ $possible_locations = array(
 	dirname(__FILE__).'/vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php'
 );
 
-if (!class_exists('Updraft_Manager_Updater_1_3')) {
+if (!class_exists('Updraft_Manager_Updater_1_4')) {
 	foreach ($possible_locations as $location) {
 		if (file_exists($location)) {
 			require_once($location);
@@ -20,7 +20,7 @@ if (!class_exists('Updraft_Manager_Updater_1_3')) {
 }
 
 try {
-	new Updraft_Manager_Updater_1_3('https://example.com/your/WP/mothership/siteurl', 1, 'plugin-dir/plugin-file.php');
+	new Updraft_Manager_Updater_1_4('https://example.com/your/WP/mothership/siteurl', 1, 'plugin-dir/plugin-file.php');
 } catch (Exception $e) {
 	error_log($e->getMessage().' at '.$e->getFile().' line '.$e->getLine());
 }

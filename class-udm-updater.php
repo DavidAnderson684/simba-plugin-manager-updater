@@ -4,10 +4,10 @@
 Licence: MIT / GPLv2+
 */
 
-if (!class_exists('Updraft_Manager_Updater_1_3')):
-class Updraft_Manager_Updater_1_3 {
+if (!class_exists('Updraft_Manager_Updater_1_4')):
+class Updraft_Manager_Updater_1_4 {
 
-	public $version = '1.3.6';
+	public $version = '1.4.0';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -111,7 +111,7 @@ class Updraft_Manager_Updater_1_3 {
 			$options = $this->get_option($this->option_name);
 
 			$result = wp_remote_post($this->url.'&udm_action=claimaddon&slug='.urlencode($this->slug).'&e='.urlencode($_POST['email']),
-				array(
+				apply_filters('udmupdater_wp_api_options', array(
 					'timeout' => 10,
 					'body' => array(
 						'e' => $_POST['email'],
@@ -121,7 +121,7 @@ class Updraft_Manager_Updater_1_3 {
 						'su' => base64_encode(home_url()),
 						'slug' => $this->slug
 					)
-				)
+				), 'claimaddon')
 			);
 
 			if (is_array($result) && isset($result['body'])) {
@@ -162,14 +162,14 @@ class Updraft_Manager_Updater_1_3 {
 				));
 			} else {
 				$result = wp_remote_post($this->url.'&udm_action=releaseaddon&slug='.urlencode($_POST['slug']).'&e='.urlencode($options['email']),
-					array(
+					apply_filters('udmupdater_wp_api_options', array(
 						'timeout' => 10,
 						'body' => array(
 							'e' => $options['email'],
 							'sid' => $this->siteid(),
 							'slug' => $_POST['slug']
 						)
-					)
+					), 'releaseaddon')
 				);
 
 				if (is_array($result) && isset($result['body'])) {
