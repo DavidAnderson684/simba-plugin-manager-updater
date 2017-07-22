@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_4')):
 class Updraft_Manager_Updater_1_4 {
 
-	public $version = '1.4.1';
+	public $version = '1.4.2';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -65,7 +65,6 @@ class Updraft_Manager_Updater_1_4 {
 			$options = $this->get_option($this->option_name);
 			$email = isset($options['email']) ? $options['email'] : '';
 			if ($email) {
-
 				// Load the file even if the Puc_v4_Factory class is already around, as this may get us a later version / avoid a really old + incompatible one
 				if (file_exists($puc_dir.'/plugin-update-checker.php')) include_once($puc_dir.'/plugin-update-checker.php');
 				
@@ -645,6 +644,10 @@ class Updraft_Manager_Updater_1_4 {
 
 		$args['si2'] = urlencode(base64_encode(json_encode($sinfo)));
 
+		// These are added by versions 4.0+ of the updates checker. We remove them because of the redundancy.
+		unset($args['php']);
+		unset($args['locale']);
+		
 		return $args;
 	}
 
