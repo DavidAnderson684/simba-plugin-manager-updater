@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_4')):
 class Updraft_Manager_Updater_1_4 {
 
-	public $version = '1.4.2';
+	public $version = '1.4.3';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -183,7 +183,8 @@ class Updraft_Manager_Updater_1_4 {
 						));
 					} else {
 						echo $result['body'];
-						if (isset($decoded['code']) && 'OK' == $decoded['code']) {
+						// Disconnect if their email address was not recognised; they probably changed it (and they're not going to be able to get any updates if it's not recognised anyway).
+						if (isset($decoded['code']) && ('OK' == $decoded['code'] || ('BADAUTH' == $decoded['code'] && isset($decoded['data']) && 'invaliduser' === $decoded['data']))) {
 							$option = $this->get_option($this->option_name);
 							if (!is_array($option)) $option = array();
 							unset($option['email']);
