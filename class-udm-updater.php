@@ -504,8 +504,8 @@ class Updraft_Manager_Updater_1_4 {
 							if (resp.hasOwnProperty('code')) {
 							
 								if ('BADAUTH' == resp.code && resp.hasOwnProperty('data') && 'invaliduser' == resp.data) {
-								
-									alert('<?php echo esc_js(__('Your email address was not recognised.', 'udmupdater'));?>');
+									alert('<?php echo esc_js(__('Your email address was not recognised. The connection information will be removed from this site.', 'udmupdater'));?>');
+									$('.udmupdater_box_<?php echo esc_js($this->slug);?>').parent().slideUp();
 								
 								} else {
 							
