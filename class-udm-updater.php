@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_4')):
 class Updraft_Manager_Updater_1_4 {
 
-	public $version = '1.4.3';
+	public $version = '1.4.4';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -120,7 +120,8 @@ class Updraft_Manager_Updater_1_4 {
 						'sid' => $this->siteid(),
 						'sn' => base64_encode(get_bloginfo('name')),
 						'su' => base64_encode(home_url()),
-						'slug' => $this->slug
+						'slug' => $this->slug,
+						'si2' => json_encode($this->get_site_info())
 					)
 				), 'claimaddon')
 			);
@@ -628,20 +629,7 @@ class Updraft_Manager_Updater_1_4 {
 		$args['e'] = urlencode($email);
 // 		$args['p'] = urlencode(base64_encode($password));
 
-		// Some information on the server calling. This can be used - e.g. if they have an old version of PHP/WordPress, then this may affect what update version they should be offered
-		include(ABSPATH.'wp-includes/version.php');
-		global $wp_version;
-		$sinfo = array(
-			'wp' => $wp_version,
-			'php' => phpversion(),
-			'multi' => (is_multisite() ? 1 : 0),
-			'mem' => ini_get('memory_limit'),
-			'lang' => get_locale()
-		);
-
-		if (isset($this->plugin_data['Version'])) {
-			$sinfo['pver'] = $this->plugin_data['Version'];
-		}
+		$sinfo = $this->get_site_info();
 
 		$args['si2'] = urlencode(base64_encode(json_encode($sinfo)));
 
@@ -650,6 +638,30 @@ class Updraft_Manager_Updater_1_4 {
 		unset($args['locale']);
 		
 		return $args;
+	}
+	
+	/**
+	 * Get information on this WP install
+	 *
+	 * @return Array - site information
+	 */
+	public function get_site_info() {
+		// Some information on the server calling. This can be used - e.g. if they have an old version of PHP/WordPress, then this may affect what update version they should be offered
+		include(ABSPATH.'wp-includes/version.php');
+		global $wp_version;
+		$sinfo = array(
+			'wp' => $wp_version,
+			'php' => PHP_VERSION,
+			'multi' => is_multisite() ? 1 : 0,
+			'mem' => ini_get('memory_limit'),
+			'lang' => get_locale()
+		);
+
+		if (isset($this->plugin_data['Version'])) {
+			$sinfo['pver'] = $this->plugin_data['Version'];
+		}
+		
+		return $sinfo;
 	}
 
 	// Funnelling through here allows for future flexibility
