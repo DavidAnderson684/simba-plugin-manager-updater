@@ -12,11 +12,13 @@ There are various ways you can install this class, depending on how much compose
 
 If you do not already have a composer.json file, then create one:
 
-```{
+```
+{
     "require": {
-        "davidanderson684/simba-plugin-manager-updater": "*"
+		"davidanderson684/simba-plugin-manager-updater": "*"
     }
-}```
+}
+```
 
 If you already have one, then just add davidanderson684/simba-plugin-manager-updater to the list of requirements (remember to keep the JSON valid, of course).
 
