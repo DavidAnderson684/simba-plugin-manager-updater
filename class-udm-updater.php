@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_4')):
 class Updraft_Manager_Updater_1_4 {
 
-	public $version = '1.4.4';
+	public $version = '1.4.5';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -29,6 +29,16 @@ class Updraft_Manager_Updater_1_4 {
 	private $option_name;
 	private $admin_notices = array();
 
+	/**
+	 * Constructor
+	 *
+	 * @param String $mothership
+	 * @param Integer $muid
+	 * @param String $relative_plugin_file
+	 * @param Integer $interval_hours
+	 * @param Boolean $auto_backoff
+	 * @param Boolean $debug
+	 */
 	public function __construct($mothership, $muid = 1, $relative_plugin_file, $interval_hours = 24, $auto_backoff = true, $debug = false) {
 
 		$this->relative_plugin_file = $relative_plugin_file;
@@ -49,7 +59,7 @@ class Updraft_Manager_Updater_1_4 {
 
 		add_action('wp_ajax_udmupdater_ajax', array($this, 'udmupdater_ajax'));
 
-		# Prevent updates from wordpress.org showing in all circumstances. Run with lower than default priority, to allow later processes to add something.
+		// Prevent updates from wordpress.org showing in all circumstances. Run with lower than default priority, to allow later processes to add something.
 		add_filter('site_transient_update_plugins', array($this, 'site_transient_update_plugins'), 9);
 
 		// Expiry notices
@@ -88,6 +98,14 @@ class Updraft_Manager_Updater_1_4 {
 		add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 10, 2);
 	}
 
+	/**
+	 * WordPress filter - decision on whether to update a plugin
+	 *
+	 * @param Boolean $update
+	 * @param Object $item
+	 *
+	 * @return Boolean
+	 */
 	public function auto_update_plugin($update, $item) {
 
 		if (!isset($item->slug) || $item->slug != $this->slug || !$this->allow_auto_updates) return $update;
@@ -101,6 +119,9 @@ class Updraft_Manager_Updater_1_4 {
 		return $update;
 	}
 	
+	/**
+	 * Process admin-ajax.php requests
+	 */
 	public function udmupdater_ajax() {
 		if (empty($_REQUEST['nonce']) || empty($_REQUEST['subaction']) || !wp_verify_nonce($_REQUEST['nonce'], 'udmupdater-ajax-nonce')) die('Security check.');
 
@@ -117,7 +138,7 @@ class Updraft_Manager_Updater_1_4 {
 					'body' => array(
 						'e' => $_POST['email'],
 						'p' => base64_encode($_POST['password']),
-						'sid' => $this->siteid(),
+						'sid' => $this->site_id(),
 						'sn' => base64_encode(get_bloginfo('name')),
 						'su' => base64_encode(home_url()),
 						'slug' => $this->slug,
@@ -168,7 +189,7 @@ class Updraft_Manager_Updater_1_4 {
 						'timeout' => 10,
 						'body' => array(
 							'e' => $options['email'],
-							'sid' => $this->siteid(),
+							'sid' => $this->site_id(),
 							'slug' => $_POST['slug']
 						)
 					), 'releaseaddon')
@@ -227,6 +248,9 @@ class Updraft_Manager_Updater_1_4 {
 		die;
 	}
 
+	/**
+	 * WordPress action admin_menu
+	 */
 	public function admin_menu() {
 		global $pagenow;
 
@@ -309,6 +333,13 @@ class Updraft_Manager_Updater_1_4 {
 
 	}
 
+	/**
+	 * WordPress filter puc_retain_fields-(slug)
+	 *
+	 * @param Array $f
+	 *
+	 * @return Array
+	 */
 	public function puc_retain_fields($f) {
 		if (!is_array($f)) return $f;
 		if (!in_array('x-spm-yourversion-tested', $f)) $f[] = 'x-spm-yourversion-tested';
@@ -317,6 +348,9 @@ class Updraft_Manager_Updater_1_4 {
 		return $f;
 	}
 
+	/**
+	 * WordPress action admin_notices
+	 */
 	public function admin_notices() {
 		foreach ($this->admin_notices as $key => $notice) {
 			$notice = '<span style="font-size: 115%;">'.$notice.'</span>';
@@ -328,28 +362,43 @@ class Updraft_Manager_Updater_1_4 {
 		}
 	}
 
+	/**
+	 * WordPress action core_upgrade_preamble
+	 */
 	public function core_upgrade_preamble() {
 		if (!current_user_can('update_plugins')) return;
 		if (!$this->is_connected()) $this->admin_notice_not_connected();
 	}
 
+	/**
+	 * WordPress action load-plugins.php
+	 */
 	public function load_plugins_php() {
 		if (!current_user_can('update_plugins')) return;
 		$this->add_admin_notice_if_not_connected();
 	}
 
-	// Returns a boolean, depending on whether we already have a connection
+	/**
+	 * Returns the state, as to whether we already have a connection or not
+	 *
+	 * @return Boolean
+	 */
 	protected function is_connected() {
 		$option = $this->get_option($this->option_name);
-		if (!empty($option['email'])) return true;
-		return false;
+		return empty($option['email']) ? false : true;
 	}
 
+	/**
+	 * Add an admin notice, depending on whether we are currently connected or not
+	 */
 	protected function add_admin_notice_if_not_connected() {
 		if ($this->is_connected()) return;
 		add_action('all_admin_notices', array($this, 'admin_notice_not_connected'));
 	}
 
+	/**
+	 * Output the contents of an admin notice
+	 */
 	public function admin_notice_not_connected() {
 		echo '<div class="updated" id="udmupdater_not_connected">';
 		$plugin_label = htmlspecialchars($this->plugin_data['Name']);
@@ -363,10 +412,13 @@ class Updraft_Manager_Updater_1_4 {
 		</script>";
 	}
 
+	/**
+	 * WordPres action after_plugin_row_($relative_plugin_file)
+	 *
+	 * @param String $file
+	 */
 	public function after_plugin_row($file) {
 		if (!current_user_can('update_plugins')) return;
-
-// 		$active_class = ( is_plugin_active( $plugin_data['plugin'] ) ) ? ' active' : '';
 
 		$wp_list_table = _get_list_table('WP_Plugins_List_Table');
 
@@ -377,6 +429,9 @@ class Updraft_Manager_Updater_1_4 {
 		echo '</td></tr>';
 	}
 
+	/**
+	 * WordPress action admin_footer
+	 */
 	public function admin_footer() {
 		?>
 		<script>
@@ -533,21 +588,33 @@ class Updraft_Manager_Updater_1_4 {
 		<?php
 	}
 	
+	/**
+	 * Set whether the plugin should be automatically updated
+	 *
+	 * @param Boolean
+	 */
 	public function set_allow_auto_updates($allow_auto_updates = true) {
 		$this->allow_auto_updates = (bool)$allow_auto_updates;
 	}
 
+	/**
+	 * Get the current stat as to whether the plugin should be automatically updated
+	 *
+	 * @return Boolean
+	 */
 	public function get_allow_auto_updates() {
 		return $this->allow_auto_updates;
 	}
 
-	protected function print_plugin_connector_box($type='inline') {
+	/**
+	 * Outputs the HTML for the connection box
+	 */
+	protected function print_plugin_connector_box() {
 
 		// Are we already connected?
 
 		$options = $this->get_option($this->option_name);
 		$email = isset($options['email']) ? $options['email'] : '';
-// 		$password = isset($options['password']) ? $options['password'] : '';
 
 		if (empty($this->connector_footer_added)) {
 			$this->connector_footer_added = true;
@@ -589,11 +656,22 @@ class Updraft_Manager_Updater_1_4 {
 		<?php
 	}
 
+	/**
+	 * WordPress action plugins_loaded
+	 */
 	public function plugins_loaded() {
 		load_plugin_textdomain('udmupdater', false, basename(dirname(__FILE__)).'/languages');
 	}
 
-	# We want to lessen the number of automatic checks if an update is already known to be available
+	/**
+	 * WordPress filter puc_check_now-(slug). A decision on whether to check for updates now; we want to lessen the number of automatic checks if an update is already known to be available
+	 *
+	 * @param Boolean $shouldcheck
+	 * @param Integer $lastcheck (UNIX time)
+	 * @param Integer $checkperiod
+	 *
+	 * @return Boolean
+	 */
 	public function puc_check_now($shouldcheck, $lastcheck, $checkperiod) {
 
 		// Skip checks immediately after a WP upgrade. This action has existed since WP 4.4. Since we're just trying to reduce server load spikes when WP core automatic security upgrades happen, that is adequate.
@@ -613,21 +691,25 @@ class Updraft_Manager_Updater_1_4 {
 		return true;
 	}
 
+	/**
+	 * Add extra parameters to the updates query
+	 *
+	 * @param Array $args
+	 *
+	 * @return Array
+	 */
 	public function updater_queryargs_plugin($args) {
 		if (!is_array($args)) return $args;
 
 		$options = $this->get_option($this->option_name);
 		$email = isset($options['email']) ? $options['email'] : '';
-		// The current protocol does not require (or recommend) sending the password
-// 		$password = isset($options['password']) ? $options['password'] : '';
 
 		$args['udm_action'] = 'updateinfo';
-		$args['sid'] = $this->siteid();
+		$args['sid'] = $this->site_id();
 		$args['su'] = urlencode(base64_encode(home_url()));
 		$args['sn'] = urlencode(base64_encode(get_bloginfo('name')));
 		$args['slug'] = urlencode($this->slug);
 		$args['e'] = urlencode($email);
-// 		$args['p'] = urlencode(base64_encode($password));
 
 		$sinfo = $this->get_site_info();
 
@@ -664,30 +746,60 @@ class Updraft_Manager_Updater_1_4 {
 		return $sinfo;
 	}
 
-	// Funnelling through here allows for future flexibility
+	/**
+	 * Funnelling through here allows for future flexibility
+	 *
+	 * @param String $option
+	 *
+	 * @return Mixed
+	 */
 	public function get_option($option) {
 		return get_site_option($option);
 	}
 
+	/**
+	 * Funnelling through here allows for future flexibility
+	 *
+	 * @param String $option
+	 * @param Mixed $val
+	 *
+	 * @return Boolean
+	 */
 	public function update_option($option, $val) {
 		return update_site_option($option, $val);
 	}
 
+	/**
+	 * Output the HTML for a dashboard message
+	 *
+	 * @param String $message
+	 * @param String $class
+	 */
 	public function show_admin_warning($message, $class = "updated") {
 		echo '<div class="updraftmanagermessage '.$class.'">'."<p>$message</p></div>";
 	}
 
-	# Remove any existing updates detected
+	/**
+	 * WordPress filter site_transient_update_plugins - used to remove any results from wordpress.org for the same slug.
+	 *
+	 * @param Object $updates
+	 *
+	 * @return Object
+	 */
 	public function site_transient_update_plugins($updates) {
 		if (!is_object($updates) || empty($this->plugin_file)) return $updates;
-		if (isset($updates, $updates->response, $updates->response[$this->plugin_file]))
+		if (isset($updates, $updates->response, $updates->response[$this->plugin_file])) {
 			unset($updates->response[$this->plugin_file]);
+		}
 		return $updates;
 	}
 
-	protected function siteid() {
-		// This used to be keyed off the plugin slug - I see no reason for that
-// 		$use_slug = $this->slug;
+	/**
+	 * Get a reasonably unique identifier for the site
+	 *
+	 * @return String
+	 */
+	protected function site_id() {
 		$use_slug = 'updater';
 		$sid = get_site_option('udmanager_'.$use_slug.'_sid');
 		if (!is_string($sid)) {
