@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_4')):
 class Updraft_Manager_Updater_1_4 {
 
-	public $version = '1.4.5';
+	public $version = '1.4.6';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -25,6 +25,8 @@ class Updraft_Manager_Updater_1_4 {
 	public $plug_updatechecker;
 
 	private $allow_auto_updates = true;
+	public $auto_backoff =  true;
+	public $interval_hours = 24;
 	
 	private $option_name;
 	private $admin_notices = array();
@@ -47,8 +49,10 @@ class Updraft_Manager_Updater_1_4 {
 		$this->muid = $muid;
 		$this->debug = $debug;
 		$this->ourdir = dirname(__FILE__);
+		$this->auto_backoff = $auto_backoff;
+		$this->interval_hours = $interval_hours;
 
-		# This needs to exact match PluginUpdateChecker's view
+		// This needs to exactly match PluginUpdateChecker's view
 		$this->plugin_file = trailingslashit(WP_PLUGIN_DIR).$relative_plugin_file;
 
 		if (!file_exists($this->plugin_file)) throw new Exception("Plugin file not found: ".$this->plugin_file);
@@ -67,29 +71,7 @@ class Updraft_Manager_Updater_1_4 {
 
 		$this->option_name = $this->slug.'_updater_options';
 
-		// Over-ride update mechanism for the plugin
-		$puc_dir = file_exists($this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker') ? $this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker' : ( file_exists(dirname(dirname($this->ourdir)).'/yahnis-elsts/plugin-update-checker') ? dirname(dirname($this->ourdir)).'/yahnis-elsts/plugin-update-checker' : $this->ourdir.'/puc');
-		
-		if (is_readable($puc_dir.'/plugin-update-checker.php') || class_exists('Puc_v4_Factory')) {
-
-			$options = $this->get_option($this->option_name);
-			$email = isset($options['email']) ? $options['email'] : '';
-			if ($email) {
-				// Load the file even if the Puc_v4_Factory class is already around, as this may get us a later version / avoid a really old + incompatible one
-				if (file_exists($puc_dir.'/plugin-update-checker.php')) include_once($puc_dir.'/plugin-update-checker.php');
-				
-				if ($auto_backoff) add_filter('puc_check_now-'.$this->slug, array($this, 'puc_check_now'), 10, 3);
-
-				add_filter('puc_retain_fields-'.$this->slug, array($this, 'puc_retain_fields'));
-// 				add_filter('puc_request_info_options-'.$this->slug, array($this, 'puc_request_info_options'));
-
-				if (class_exists('Puc_v4_Factory')) {
-					$this->plug_updatechecker = Puc_v4_Factory::buildUpdateChecker($this->url, WP_PLUGIN_DIR.'/'.$this->relative_plugin_file, $this->slug, $interval_hours);
-					$this->plug_updatechecker->addQueryArgFilter(array($this, 'updater_queryargs_plugin'));
-					if ($this->debug) $this->plug_updatechecker->debugMode = true;
-				}
-			}
-		}
+		$this->get_puc_updates_checker();
 
 		add_action("after_plugin_row_$relative_plugin_file", array($this, 'after_plugin_row'), 10, 2 );
 		add_action('load-plugins.php', array($this, 'load_plugins_php'));
@@ -97,7 +79,51 @@ class Updraft_Manager_Updater_1_4 {
 		
 		add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 10, 2);
 	}
+	
+	/**
+	 * Set up the updates checker object.
+	 *
+	 * If successful, the object will be available as $this->plug_updatechecker
+	 */
+	public function get_puc_updates_checker() {
+		
+		if (!empty($this->plug_updatechecker)) return;
+		
+		// Over-ride update mechanism for the plugin
+		$puc_dir = $this->get_puc_dir();
+		
+		if (is_readable($puc_dir.'/plugin-update-checker.php') || class_exists('Puc_v4_Factory')) {
 
+			$options = $this->get_option($this->option_name);
+			$email = isset($options['email']) ? $options['email'] : '';
+			
+			if ($email) {
+				// Load the file even if the Puc_v4_Factory class is already around, as this may get us a later version / avoid a really old + incompatible one
+				if (file_exists($puc_dir.'/plugin-update-checker.php')) include_once($puc_dir.'/plugin-update-checker.php');
+				
+				if ($this->auto_backoff) add_filter('puc_check_now-'.$this->slug, array($this, 'puc_check_now'), 10, 3);
+
+				add_filter('puc_retain_fields-'.$this->slug, array($this, 'puc_retain_fields'));
+ 				// add_filter('puc_request_info_options-'.$this->slug, array($this, 'puc_request_info_options'));
+
+				if (class_exists('Puc_v4_Factory')) {
+					$this->plug_updatechecker = Puc_v4_Factory::buildUpdateChecker($this->url, WP_PLUGIN_DIR.'/'.$this->relative_plugin_file, $this->slug, $this->interval_hours);
+					$this->plug_updatechecker->addQueryArgFilter(array($this, 'updater_queryargs_plugin'));
+					if ($this->debug) $this->plug_updatechecker->debugMode = true;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get the directory for the PUC component
+	 *
+	 * @return String
+	 */
+	private function get_puc_dir() {
+		return file_exists($this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker') ? $this->ourdir.'/vendor/yahnis-elsts/plugin-update-checker' : ( file_exists(dirname(dirname($this->ourdir)).'/yahnis-elsts/plugin-update-checker') ? dirname(dirname($this->ourdir)).'/yahnis-elsts/plugin-update-checker' : $this->ourdir.'/puc');
+	}
+	
 	/**
 	 * WordPress filter - decision on whether to update a plugin
 	 *
@@ -149,7 +175,8 @@ class Updraft_Manager_Updater_1_4 {
 
 			if (is_array($result) && isset($result['body'])) {
 
-				$decoded = json_decode($result['body'], true);
+				$decoded = json_decode($result['body']);
+				
 				if (empty($decoded)) {
 					echo json_encode(array(
 						'code' => 'INVALID',
@@ -157,12 +184,42 @@ class Updraft_Manager_Updater_1_4 {
 					));
 				} else {
 					echo $result['body'];
-					if (isset($decoded['code']) && 'OK' == $decoded['code']) {
+					
+					// Save the new settings first, so that they can then possibly be used
+					if (isset($decoded->code) && 'OK' == $decoded->code) {
 						$option = $this->get_option($this->option_name);
 						if (!is_array($option)) $option = array();
 						$option['email'] = $_POST['email'];
 						$this->update_option($this->option_name, $option);
 					}
+					
+					if (isset($decoded->data) && isset($decoded->data->plugin_info)) {
+						$plugin_info = $decoded->data->plugin_info;
+						
+						$this->get_puc_updates_checker();
+						
+						if (class_exists('Puc_v4p2_Plugin_Update') && !empty($this->plug_updatechecker)) {
+
+							$plugin_update = Puc_v4p2_Plugin_Update::fromObject($plugin_info);
+							
+							$update_checker = $this->plug_updatechecker;
+							
+							$installed_version = $update_checker->getInstalledVersion();
+
+							if (null !== $installed_version) {
+								// Save before checking in case something goes wrong (copied from the updates checker library)
+								$state = $update_checker->getUpdateState();
+								$state->setLastCheckToNow()->setCheckedVersion($installed_version)->save(); 
+								$state->setUpdate($plugin_update);
+								$state->save();
+							}
+							
+							
+							error_log(serialize($decoded->data));
+						}
+
+					}
+					
 				}
 
 			} elseif (is_wp_error($result)) {
