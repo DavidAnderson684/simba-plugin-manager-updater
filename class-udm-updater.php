@@ -207,9 +207,8 @@ class Updraft_Manager_Updater_1_4 {
 							$installed_version = $update_checker->getInstalledVersion();
 
 							if (null !== $installed_version) {
-								// Save before checking in case something goes wrong (copied from the updates checker library)
 								$state = $update_checker->getUpdateState();
-								$state->setLastCheckToNow()->setCheckedVersion($installed_version)->save();
+								$state->setLastCheckToNow()->setCheckedVersion($installed_version);
 								$state->setUpdate($plugin_update);
 								$state->save();
 							}
