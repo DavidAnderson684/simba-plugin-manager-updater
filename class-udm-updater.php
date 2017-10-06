@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_4')):
 class Updraft_Manager_Updater_1_4 {
 
-	public $version = '1.4.7';
+	public $version = '1.4.8';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -306,9 +306,10 @@ class Updraft_Manager_Updater_1_4 {
 	 * WordPress action admin_menu
 	 */
 	public function admin_menu() {
+	
 		global $pagenow;
 
-		# Do we want to display a notice about the upcoming or past expiry of their subscription?
+		// Do we want to display a notice about the upcoming or past expiry of their subscription?
 		if (!empty($this->plug_updatechecker) && !empty($this->plug_updatechecker->optionName) && current_user_can('update_plugins')) {
 			#(!is_multisite() && 'options-general.php' == $pagenow) || (is_multisite() && 'settings.php' == $pagenow) ||
 			if ('plugins.php' == $pagenow || 'update-core.php' == $pagenow || (('options-general.php' == $pagenow || 'admin.php' == $pagenow) && !empty($_REQUEST['page']) && $this->slug == $_REQUEST['page'])) {
@@ -333,6 +334,14 @@ class Updraft_Manager_Updater_1_4 {
 
 		$yourversionkey = 'x-spm-yourversion-tested';
 
+		$plugin_title = htmlspecialchars($this->plugin_data['Name']);
+		$please_renew = __('please renew', 'udmupdater');
+		
+		if (is_object($oval) && !empty($oval->update) && is_object($oval->update) && !empty($oval->update->homepage)) {
+			$plugin_title = '<a href="'.esc_url($oval->update->homepage).'">'.$plugin_title.'</a>';
+			$please_renew = '<a href="'.esc_url($oval->update->homepage).'">'.$please_renew.'</a>';
+		}
+		
 		if (is_object($oval) && !empty($oval->update) && is_object($oval->update) && !empty($oval->update->$yourversionkey) && current_user_can('update_plugins') && true == apply_filters('udmanager_showcompatnotice', true, $this->slug) && (!defined('UDMANAGER_DISABLECOMPATNOTICE') || true != UDMANAGER_DISABLECOMPATNOTICE)) {
 
 			// Prevent false-positives
@@ -350,31 +359,32 @@ class Updraft_Manager_Updater_1_4 {
 			$compare_tested_version = $oval->update->$yourversionkey;
 			if (!empty($readme_says) && version_compare($readme_says, $compare_tested_version, '>')) $compare_tested_version = $readme_says;
 			#$compare_tested_version = (preg_match('/^(\d+\.\d+)\.*$/', $oval->update->$yourversionkey, $wmatches)) ? $wmatches[1] : $oval->update->$yourversionkey;
-
+			
 			if (version_compare($compare_wp_version, $compare_tested_version, '>')) {
-				$this->admin_notices['yourversiontested'] = '<strong>'.__('Warning', 'udmupdater').':</strong> '.sprintf(__('The installed version of %s has not been tested on your version of WordPress (%s).', 'udmupdater'), htmlspecialchars($this->plugin_data['Name']), $wp_version).' '.sprintf(__('It has been tested up to version %s.', 'udmupdater'), $compare_tested_version).' '.__('You should update to make sure that you have a version that has been tested for compatibility.', 'udmupdater');
+				$this->admin_notices['yourversiontested'] = '<strong>'.__('Warning', 'udmupdater').':</strong> '.sprintf(__('The installed version of %s has not been tested on your version of WordPress (%s).', 'udmupdater'), $plugin_title, $wp_version).' '.sprintf(__('It has been tested up to version %s.', 'udmupdater'), $compare_tested_version).' '.__('You should update to make sure that you have a version that has been tested for compatibility.', 'udmupdater');
 			}
 		}
 
 		if (!empty($do_expiry_check) && is_object($oval) && !empty($oval->update) && is_object($oval->update) && !empty($oval->update->$updateskey)) {
 
 			if (preg_match('/(^|)expired_?(\d+)?(,|$)/', $oval->update->$updateskey, $matches)) {
+			
 				if (empty($matches[2])) {
-					$this->admin_notices['updatesexpired'] = sprintf(__('Your paid access to %s updates for this site has expired. You will no longer receive updates.', 'udmupdater'), htmlspecialchars($this->plugin_data['Name'])).' '.__('To regain access to updates (including future features and compatibility with future WordPress releases) and support, please renew.', 'udmupdater').$dismiss;
+					$this->admin_notices['updatesexpired'] = sprintf(__('Your paid access to %s updates for this site has expired. You will no longer receive updates.', 'udmupdater'), $plugin_title).' '.sprintf(__('To regain access to updates (including future features and compatibility with future WordPress releases) and support, %s.', 'udmupdater'), $please_renew).$dismiss;
 				} else {
-					$this->admin_notices['updatesexpired'] = sprintf(__('Your paid access to %s updates for %s add-ons on this site has expired.', 'udmupdater'), htmlspecialchars($this->plugin_data['Name']), $matches[2]).' '.__('To regain access to updates (including future features and compatibility with future WordPress releases) and support, please renew.', 'udmupdater').$dismiss;
+					$this->admin_notices['updatesexpired'] = sprintf(__('Your paid access to %s updates for %s add-ons on this site has expired.', 'udmupdater'), $plugin_title, $matches[2]).' '.sprintf(__('To regain access to updates (including future features and compatibility with future WordPress releases) and support, %s.', $please_renew)).$dismiss;
 				}
 			}
 			if (preg_match('/(^|,)soonpartial_(\d+)_(\d+)($|,)/', $oval->update->$updateskey, $matches)) {
-				$this->admin_notices['updatesexpiringsoon'] = sprintf(__('Your paid access to %s updates for %s of the %s add-ons on this site will soon expire.', 'udmupdater'), htmlspecialchars($this->plugin_data['Name']), $matches[2], $matches[3]).' '.__('To retain your access, and maintain access to updates (including future features and compatibility with future WordPress releases) and support, please renew.', 'udmupdater').$dismiss;
+				$this->admin_notices['updatesexpiringsoon'] = sprintf(__('Your paid access to %s updates for %s of the %s add-ons on this site will soon expire.', 'udmupdater'), $plugin_title, $matches[2], $matches[3]).' '.sprintf(__('To retain your access, and maintain access to updates (including future features and compatibility with future WordPress releases) and support, %s.', 'udmupdater'), $please_renew).$dismiss;
 			} elseif (preg_match('/(^|,)soon($|,)/', $oval->update->$updateskey)) {
-				$this->admin_notices['updatesexpiringsoon'] = sprintf(__('Your paid access to %s updates for this site will soon expire.', 'udmupdater'), htmlspecialchars($this->plugin_data['Name'])).' '.__('To retain your access, and maintain access to updates (including future features and compatibility with future WordPress releases) and support, please renew.', 'udmupdater').''.$dismiss;
+				$this->admin_notices['updatesexpiringsoon'] = sprintf(__('Your paid access to %s updates for this site will soon expire.', 'udmupdater'), $plugin_title).' '.sprintf(__('To retain your access, and maintain access to updates (including future features and compatibility with future WordPress releases) and support, %s.', 'udmupdater'), $please_renew).''.$dismiss;
 			}
 		} elseif (!empty($do_expiry_check) && is_object($oval) && !empty($oval->update) && is_object($oval->update) && !empty($oval->update->$supportkey)) {
 			if ('expired' == $oval->update->$supportkey) {
-				$this->admin_notices['supportexpired'] = sprintf(__('Your paid access to %s support has expired.','udmupdater'), htmlspecialchars($this->plugin_data['Name'])).' '.__('To regain your access, please renew.', 'udmupdater').$dismiss;
+				$this->admin_notices['supportexpired'] = sprintf(__('Your paid access to %s support has expired.','udmupdater'), $plugin_title).' '.sprintf(__('To regain your access, %s.', 'udmupdater'), $please_renew).$dismiss;
 			} elseif ('soon' == $oval->update->$supportkey) {
-				$this->admin_notices['supportsoonexpiring'] = sprintf(__('Your paid access to %s support will soon expire.','udmupdater'), htmlspecialchars($this->plugin_data['Name'])).' '.__('To maintain your access to support, please renew.', 'udmupdater').$dismiss;
+				$this->admin_notices['supportsoonexpiring'] = sprintf(__('Your paid access to %s support will soon expire.','udmupdater'), $plugin_title).' '.sprintf(__('To maintain your access to support, %s.', 'udmupdater'), $please_renew).$dismiss;
 			}
 		}
 
