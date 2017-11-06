@@ -6,10 +6,10 @@ if (!defined('ABSPATH')) die('No direct access.');
 Licence: MIT / GPLv2+
 */
 
-if (!class_exists('Updraft_Manager_Updater_1_4')):
-class Updraft_Manager_Updater_1_4 {
+if (!class_exists('Updraft_Manager_Updater_1_5')):
+class Updraft_Manager_Updater_1_5 {
 
-	public $version = '1.4.8';
+	public $version = '1.5.0';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -198,9 +198,9 @@ class Updraft_Manager_Updater_1_4 {
 						
 						$this->get_puc_updates_checker();
 						
-						if (class_exists('Puc_v4p2_Plugin_Update') && !empty($this->plug_updatechecker)) {
+						if (class_exists('Puc_v4p3_Plugin_Update') && !empty($this->plug_updatechecker)) {
 
-							$plugin_update = Puc_v4p2_Plugin_Update::fromObject($plugin_info);
+							$plugin_update = Puc_v4p3_Plugin_Update::fromObject($plugin_info);
 							
 							$update_checker = $this->plug_updatechecker;
 							
