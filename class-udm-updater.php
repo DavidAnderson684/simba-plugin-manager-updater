@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_5')):
 class Updraft_Manager_Updater_1_5 {
 
-	public $version = '1.5.1';
+	public $version = '1.5.2';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -586,7 +586,7 @@ class Updraft_Manager_Updater_1_5 {
 					$.post(ajaxurl, sdata, function(response, data) {
 						$(button).prop('disabled', false);
 						try {
-							resp = $.parseJSON(response);
+							resp = JSON.parse(response);
 							if (resp.hasOwnProperty('code')) {
 								if ('active' == resp.code) {
 									alert('<?php echo esc_js(__('When updates to this plugin are available, they will be automatically installed.', 'udmupdater'));?>');
@@ -620,7 +620,7 @@ class Updraft_Manager_Updater_1_5 {
 					$.post(ajaxurl, sdata, function(response, data) {
 						$(button).prop('disabled', false).html('<?php echo esc_js(__('Disconnect', 'udmupdater')); ?>');
 						try {
-							resp = $.parseJSON(response);
+							resp = JSON.parse(response);
 							if (resp.hasOwnProperty('code')) {
 							
 								if ('BADAUTH' == resp.code && resp.hasOwnProperty('data') && 'invaliduser' == resp.data) {
