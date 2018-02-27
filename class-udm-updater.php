@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_5')):
 class Updraft_Manager_Updater_1_5 {
 
-	public $version = '1.5.0';
+	public $version = '1.5.1';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -530,7 +530,7 @@ class Updraft_Manager_Updater_1_5 {
 					$.post(ajaxurl, sdata, function(response, data) {
 						$(button).prop('disabled', false).html('<?php echo esc_js(__('Connect', 'udmupdater')); ?>');
 						try {
-							resp = $.parseJSON(response);
+							resp = JSON.parse(response);
 							if (resp.hasOwnProperty('code')) {
 								console.log('Code: '+resp.code);
 								if (resp.code == 'INVALID') {
