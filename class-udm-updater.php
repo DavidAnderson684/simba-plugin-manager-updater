@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_5')):
 class Updraft_Manager_Updater_1_5 {
 
-	public $version = '1.5.2';
+	public $version = '1.5.3';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -818,7 +818,11 @@ class Updraft_Manager_Updater_1_5 {
 	 * @return Mixed
 	 */
 	public function get_option($option) {
-		return get_site_option($option);
+		if (is_multisite()) {
+			return get_site_option($option);
+		} else {
+			return get_option($option);
+		}
 	}
 
 	/**
@@ -830,7 +834,12 @@ class Updraft_Manager_Updater_1_5 {
 	 * @return Boolean
 	 */
 	public function update_option($option, $val) {
-		return update_site_option($option, $val);
+		if (is_multisite()) {
+			return update_site_option($option, $val);
+		} else {
+			// On non-multisite, this results in storing in the same place - but also sets 'autoload' to true, which update_site_option() does not
+			return update_option($option, $val, true);
+		}
 	}
 
 	/**
