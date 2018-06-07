@@ -331,6 +331,7 @@ class Updraft_Manager_Updater_1_5 {
 		$oval = is_object($this->plug_updatechecker) ? get_site_option($this->plug_updatechecker->optionName, null) : null;
 		$updateskey = 'x-spm-expiry';
 		$supportkey = 'x-spm-support-expiry';
+		$subscription_active = 'x-spm-subscription-active';
 
 		$yourversionkey = 'x-spm-yourversion-tested';
 
@@ -365,8 +366,7 @@ class Updraft_Manager_Updater_1_5 {
 			}
 		}
 
-		if (!empty($do_expiry_check) && is_object($oval) && !empty($oval->update) && is_object($oval->update) && !empty($oval->update->$updateskey)) {
-
+		if (!empty($do_expiry_check) && is_object($oval) && !empty($oval->update) && empty($oval->update->$subscription_active) && is_object($oval->update) && !empty($oval->update->$updateskey)) {
 			if (preg_match('/(^|)expired_?(\d+)?(,|$)/', $oval->update->$updateskey, $matches)) {
 			
 				if (empty($matches[2])) {
@@ -409,6 +409,7 @@ class Updraft_Manager_Updater_1_5 {
 		if (!in_array('x-spm-yourversion-tested', $f)) $f[] = 'x-spm-yourversion-tested';
 		if (!in_array('x-spm-expiry', $f)) $f[] = 'x-spm-expiry';
 		if (!in_array('x-spm-support-expiry', $f)) $f[] = 'x-spm-support-expiry';
+		if (!in_array('x-spm-subscription-active', $f)) $f[] = 'x-spm-subscription-active';
 		return $f;
 	}
 
