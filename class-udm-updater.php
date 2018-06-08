@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_5')):
 class Updraft_Manager_Updater_1_5 {
 
-	public $version = '1.5.3';
+	public $version = '1.5.4';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -366,7 +366,7 @@ class Updraft_Manager_Updater_1_5 {
 			}
 		}
 
-		if (!empty($do_expiry_check) && is_object($oval) && !empty($oval->update) && empty($oval->update->$subscription_active) && is_object($oval->update) && !empty($oval->update->$updateskey)) {
+		if (!empty($do_expiry_check) && is_object($oval) && !empty($oval->update) && is_object($oval->update) && !empty($oval->update->$updateskey)) {
 			if (preg_match('/(^|)expired_?(\d+)?(,|$)/', $oval->update->$updateskey, $matches)) {
 			
 				if (empty($matches[2])) {
@@ -375,10 +375,13 @@ class Updraft_Manager_Updater_1_5 {
 					$this->admin_notices['updatesexpired'] = sprintf(__('Your paid access to %s updates for %s add-ons on this site has expired.', 'udmupdater'), $plugin_title, $matches[2]).' '.sprintf(__('To regain access to updates (including future features and compatibility with future WordPress releases) and support, %s.', $please_renew)).$dismiss;
 				}
 			}
-			if (preg_match('/(^|,)soonpartial_(\d+)_(\d+)($|,)/', $oval->update->$updateskey, $matches)) {
-				$this->admin_notices['updatesexpiringsoon'] = sprintf(__('Your paid access to %s updates for %s of the %s add-ons on this site will soon expire.', 'udmupdater'), $plugin_title, $matches[2], $matches[3]).' '.sprintf(__('To retain your access, and maintain access to updates (including future features and compatibility with future WordPress releases) and support, %s.', 'udmupdater'), $please_renew).$dismiss;
-			} elseif (preg_match('/(^|,)soon($|,)/', $oval->update->$updateskey)) {
-				$this->admin_notices['updatesexpiringsoon'] = sprintf(__('Your paid access to %s updates for this site will soon expire.', 'udmupdater'), $plugin_title).' '.sprintf(__('To retain your access, and maintain access to updates (including future features and compatibility with future WordPress releases) and support, %s.', 'udmupdater'), $please_renew).''.$dismiss;
+			// If the licence is expiring soon but they still have an active subscription then we don't want to show the notice.
+			if (empty(apply_filters('udmupdater_subscription_active', $oval->update->$subscription_active))) {
+				if (preg_match('/(^|,)soonpartial_(\d+)_(\d+)($|,)/', $oval->update->$updateskey, $matches)) {
+					$this->admin_notices['updatesexpiringsoon'] = sprintf(__('Your paid access to %s updates for %s of the %s add-ons on this site will soon expire.', 'udmupdater'), $plugin_title, $matches[2], $matches[3]).' '.sprintf(__('To retain your access, and maintain access to updates (including future features and compatibility with future WordPress releases) and support, %s.', 'udmupdater'), $please_renew).$dismiss;
+				} elseif (preg_match('/(^|,)soon($|,)/', $oval->update->$updateskey)) {
+					$this->admin_notices['updatesexpiringsoon'] = sprintf(__('Your paid access to %s updates for this site will soon expire.', 'udmupdater'), $plugin_title).' '.sprintf(__('To retain your access, and maintain access to updates (including future features and compatibility with future WordPress releases) and support, %s.', 'udmupdater'), $please_renew).''.$dismiss;
+				}
 			}
 		} elseif (!empty($do_expiry_check) && is_object($oval) && !empty($oval->update) && is_object($oval->update) && !empty($oval->update->$supportkey)) {
 			if ('expired' == $oval->update->$supportkey) {
