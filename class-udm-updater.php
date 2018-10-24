@@ -204,9 +204,10 @@ class Updraft_Manager_Updater_1_5 {
 						// Hopefully take off the 'Checker'. The setUpdate() call below wants a compatible version.
 						$plugin_update_class = substr($checker_class, 0, strlen($checker_class)-7);
 						
-						if (class_exists($plugin_update_class) && !empty($this->plug_updatechecker)) {
+						if (class_exists($plugin_update_class) && is_callable(array($plugin_update_class, 'fromObject')) && !empty($this->plug_updatechecker)) {
 
-							$plugin_update = $plugin_update_class::fromObject($plugin_info);
+							// $plugin_update_class::fromObject() is invalid syntax on PHP 5.2
+							$plugin_update = call_user_func(array($plugin_update_class, 'fromObject'), $plugin_info);
 							
 							$update_checker = $this->plug_updatechecker;
 							
