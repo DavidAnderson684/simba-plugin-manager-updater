@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_5')):
 class Updraft_Manager_Updater_1_5 {
 
-	public $version = '1.5.5';
+	public $version = '1.5.6';
 
 	public $relative_plugin_file;
 	public $slug;
