@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_5')):
 class Updraft_Manager_Updater_1_5 {
 
-	public $version = '1.5.6';
+	public $version = '1.5.7';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -383,6 +383,7 @@ class Updraft_Manager_Updater_1_5 {
 				}
 			}
 			// If the licence is expiring soon but they still have an active subscription then we don't want to show the notice.
+			$subscription_active = empty($oval->update->$subscription_active) ? false : $oval->update->$subscription_active;
 			$subscription_status = apply_filters('udmupdater_subscription_active', $oval->update->$subscription_active);
 			if (empty($subscription_status)) {
 				if (preg_match('/(^|,)soonpartial_(\d+)_(\d+)($|,)/', $oval->update->$updateskey, $matches)) {
