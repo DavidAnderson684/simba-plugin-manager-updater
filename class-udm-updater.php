@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_5')):
 class Updraft_Manager_Updater_1_5 {
 
-	public $version = '1.5.7';
+	public $version = '1.5.8';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -384,7 +384,7 @@ class Updraft_Manager_Updater_1_5 {
 			}
 			// If the licence is expiring soon but they still have an active subscription then we don't want to show the notice.
 			$subscription_active = empty($oval->update->$subscription_active) ? false : $oval->update->$subscription_active;
-			$subscription_status = apply_filters('udmupdater_subscription_active', $oval->update->$subscription_active);
+			$subscription_status = apply_filters('udmupdater_subscription_active', $subscription_active);
 			if (empty($subscription_status)) {
 				if (preg_match('/(^|,)soonpartial_(\d+)_(\d+)($|,)/', $oval->update->$updateskey, $matches)) {
 					$this->admin_notices['updatesexpiringsoon'] = sprintf(__('Your paid access to %s updates for %s of the %s add-ons on this site will soon expire.', 'udmupdater'), $plugin_title, $matches[2], $matches[3]).' '.sprintf(__('To retain your access, and maintain access to updates (including future features and compatibility with future WordPress releases) and support, %s.', 'udmupdater'), $please_renew).$dismiss;
