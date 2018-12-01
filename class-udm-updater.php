@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_5')):
 class Updraft_Manager_Updater_1_5 {
 
-	public $version = '1.5.8';
+	public $version = '1.5.9';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -92,27 +92,28 @@ class Updraft_Manager_Updater_1_5 {
 		// Over-ride update mechanism for the plugin
 		$puc_dir = $this->get_puc_dir();
 		
-		if (is_readable($puc_dir.'/plugin-update-checker.php') || class_exists('Puc_v4_Factory')) {
+		if (!is_readable($puc_dir.'/plugin-update-checker.php') && !class_exists('Puc_v4_Factory')) return;
 
-			$options = $this->get_option($this->option_name);
-			$email = isset($options['email']) ? $options['email'] : '';
-			
-			if ($email) {
-				// Load the file even if the Puc_v4_Factory class is already around, as this may get us a later version / avoid a really old + incompatible one
-				if (file_exists($puc_dir.'/plugin-update-checker.php')) include_once($puc_dir.'/plugin-update-checker.php');
-				
-				if ($this->auto_backoff) add_filter('puc_check_now-'.$this->slug, array($this, 'puc_check_now'), 10, 3);
+		$options = $this->get_option($this->option_name);
+		
+		$email = isset($options['email']) ? $options['email'] : '';
+		
+		if (!$email) return;
+		
+		// Load the file even if the Puc_v4_Factory class is already around, as this may get us a later version / avoid a really old + incompatible one
+		if (file_exists($puc_dir.'/plugin-update-checker.php')) include_once($puc_dir.'/plugin-update-checker.php');
+		
+		if ($this->auto_backoff) add_filter('puc_check_now-'.$this->slug, array($this, 'puc_check_now'), 10, 3);
 
-				add_filter('puc_retain_fields-'.$this->slug, array($this, 'puc_retain_fields'));
- 				// add_filter('puc_request_info_options-'.$this->slug, array($this, 'puc_request_info_options'));
+		add_filter('puc_retain_fields-'.$this->slug, array($this, 'puc_retain_fields'));
+		// add_filter('puc_request_info_options-'.$this->slug, array($this, 'puc_request_info_options'));
 
-				if (class_exists('Puc_v4_Factory')) {
-					$this->plug_updatechecker = Puc_v4_Factory::buildUpdateChecker($this->url, WP_PLUGIN_DIR.'/'.$this->relative_plugin_file, $this->slug, $this->interval_hours);
-					$this->plug_updatechecker->addQueryArgFilter(array($this, 'updater_queryargs_plugin'));
-					if ($this->debug) $this->plug_updatechecker->debugMode = true;
-				}
-			}
+		if (class_exists('Puc_v4_Factory')) {
+			$this->plug_updatechecker = Puc_v4_Factory::buildUpdateChecker($this->url, WP_PLUGIN_DIR.'/'.$this->relative_plugin_file, $this->slug, $this->interval_hours);
+			$this->plug_updatechecker->addQueryArgFilter(array($this, 'updater_queryargs_plugin'));
+			if ($this->debug) $this->plug_updatechecker->debugMode = true;
 		}
+
 	}
 
 	/**
@@ -199,7 +200,7 @@ class Updraft_Manager_Updater_1_5 {
 						$this->get_puc_updates_checker();
 						
 						// e.g. Puc_v4p4_Plugin_UpdateChecker
-						$checker_class = $this->plug_updatechecker;
+						$checker_class = get_class($this->plug_updatechecker);
 						
 						// Hopefully take off the 'Checker'. The setUpdate() call below wants a compatible version.
 						$plugin_update_class = substr($checker_class, 0, strlen($checker_class)-7);
