@@ -356,7 +356,7 @@ class Updraft_Manager_Updater_1_5 {
 			// Prevent false-positives
 			if (file_exists(dirname($this->plugin_file).'/readme.txt') && $fp = fopen(dirname($this->plugin_file).'/readme.txt', 'r')) {
 				$file_data = fread($fp, 1024);
-				if (preg_match("/^Tested up to: (\d+\.\d+).*(\r|\n)/", $file_data, $matches)) {
+				if (preg_match("/Tested up to: (\d+\.\d+).*(\r|\n)/", $file_data, $matches)) {
 					$readme_says = $matches[1];
 				}
 				fclose($fp);
