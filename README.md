@@ -15,7 +15,7 @@ If you do not already have a composer.json file, then create one:
 ```
 {
     "require": {
-		"davidanderson684/simba-plugin-manager-updater": "*"
+		"davidanderson684/simba-plugin-manager-updater": "1.5.*"
     }
 }
 ```
