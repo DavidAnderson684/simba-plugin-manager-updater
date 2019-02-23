@@ -199,7 +199,7 @@ class Updraft_Manager_Updater_1_6 {
 						
 						$this->get_puc_updates_checker();
 						
-						// e.g. Puc_v4p4_Plugin_UpdateChecker
+						// e.g. Puc_v4p5_Plugin_UpdateChecker
 						$checker_class = get_class($this->plug_updatechecker);
 						
 						// Hopefully take off the 'Checker'. The setUpdate() call below wants a compatible version.
