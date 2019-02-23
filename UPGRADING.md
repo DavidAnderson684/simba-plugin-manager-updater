@@ -1,6 +1,6 @@
 This project follows semantic versioning principles.
 
-# Upgrading from 1.4 to 1.5.
+# Upgrading from 1.5 to 1.6.
 
 There are no API-breaking changes. You can use your code unmodified (beyond altering the class name that you instantiate from Updraft_Manager_Updater_1_5 to Updraft_Manager_Updater_1_6). The version bump is necessitated by a version bump in a dependency.
 
