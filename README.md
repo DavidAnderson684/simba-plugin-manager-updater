@@ -15,7 +15,7 @@ If you do not already have a composer.json file, then create one:
 ```
 {
     "require": {
-		"davidanderson684/simba-plugin-manager-updater": "1.5.*"
+		"davidanderson684/simba-plugin-manager-updater": "1.6.*"
     }
 }
 ```
@@ -48,7 +48,7 @@ If you are using composer, you should copy the updater.php file into your plugin
 
 updater.php is a very short file. Find this line ...
 
-`new Updraft_Manager_Updater_1_5('https://example.com/your/WP/mothership/homeurl', 1, 'plugin-dir/plugin-file.php');`
+`new Updraft_Manager_Updater_1_6('https://example.com/your/WP/mothership/homeurl', 1, 'plugin-dir/plugin-file.php');`
 
 ... and:
 
