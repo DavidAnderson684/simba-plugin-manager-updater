@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_6')):
 class Updraft_Manager_Updater_1_6 {
 
-	public $version = '1.6.0';
+	public $version = '1.6.1';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -71,6 +71,12 @@ class Updraft_Manager_Updater_1_6 {
 
 		$this->option_name = $this->slug.'_updater_options';
 
+		if (did_action('init')) {
+			$this->load_text_domain();
+		} else {
+			add_action('init', array($this, 'load_text_domain'));
+		}
+		
 		$this->get_puc_updates_checker();
 
 		add_action("after_plugin_row_$relative_plugin_file", array($this, 'after_plugin_row'), 10, 2 );
@@ -78,6 +84,18 @@ class Updraft_Manager_Updater_1_6 {
 		add_action('core_upgrade_preamble', array($this, 'core_upgrade_preamble'));
 		
 		add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 10, 2);
+	}
+	
+	/**
+	 * Loading of translations
+	 */
+	public function load_text_domain() {
+		$domain = 'udmupdater';
+		$locale = apply_filters('udmupdater_locale', (is_admin() && function_exists('get_user_locale')) ? get_user_locale() : get_locale(), $domain, $this);
+
+		$mo_file = realpath(dirname(__FILE__).'/languages').'/'.$domain.'-'.$locale.'.mo';
+
+		if (file_exists($mo_file)) load_textdomain($domain, $mo_file);
 	}
 	
 	/**
