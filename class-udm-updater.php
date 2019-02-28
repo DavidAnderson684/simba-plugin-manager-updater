@@ -98,8 +98,6 @@ class Updraft_Manager_Updater_1_5 {
 		
 		$email = isset($options['email']) ? $options['email'] : '';
 		
-		if (!$email) return;
-		
 		// Load the file even if the Puc_v4_Factory class is already around, as this may get us a later version / avoid a really old + incompatible one
 		if (file_exists($puc_dir.'/plugin-update-checker.php')) include_once($puc_dir.'/plugin-update-checker.php');
 		
