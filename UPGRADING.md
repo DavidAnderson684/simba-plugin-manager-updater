@@ -4,6 +4,8 @@ This project follows semantic versioning principles.
 
 There are no API-breaking changes. You can use your code unmodified (beyond altering the class name that you instantiate from Updraft_Manager_Updater_1_5 to Updraft_Manager_Updater_1_6). The version bump is necessitated by a version bump in a dependency.
 
+In version 1.6.2, updates checks can be carried out even if the user is not connected, to allow updates availabilty to be shown (as an incentive to connect). In this version, it is off by default; but you can call set_require_login(false) to disable this. Alternatively, call set_require_login(true) to lock-in the old behaviour (the default is expected to change in future).
+
 # Upgrading from 1.4 to 1.5.
 
 There are no API-breaking changes. You can use your code unmodified (beyond altering the class name that you instantiate from Updraft_Manager_Updater_1_4 to Updraft_Manager_Updater_1_5). The version bump is necessitated by a version bump in a dependency.

@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_6')):
 class Updraft_Manager_Updater_1_6 {
 
-	public $version = '1.6.1';
+	public $version = '1.6.2';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -30,6 +30,8 @@ class Updraft_Manager_Updater_1_6 {
 	
 	private $option_name;
 	private $admin_notices = array();
+	
+	public $require_login = true;
 
 	/**
 	 * Constructor
@@ -87,6 +89,17 @@ class Updraft_Manager_Updater_1_6 {
 	}
 	
 	/**
+	 * Indicate whether login is required prior to doing an updates check
+	 *
+	 * To force the pre-1.6.2 behaviour (even if the default changes in future) set to false
+	 *
+	 * @param Boolean $require_login
+	 */
+	public function set_require_login($require_login) {
+		$this->require_login = $require_login;
+	}
+	
+	/**
 	 * Loading of translations
 	 */
 	public function load_text_domain() {
@@ -116,7 +129,7 @@ class Updraft_Manager_Updater_1_6 {
 		
 		$email = isset($options['email']) ? $options['email'] : '';
 		
-		if (!$email) return;
+		if (!$email && $this->require_login) return;
 		
 		// Load the file even if the Puc_v4_Factory class is already around, as this may get us a later version / avoid a really old + incompatible one
 		if (file_exists($puc_dir.'/plugin-update-checker.php')) include_once($puc_dir.'/plugin-update-checker.php');
