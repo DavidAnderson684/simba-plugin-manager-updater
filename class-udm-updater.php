@@ -6,10 +6,10 @@ if (!defined('ABSPATH')) die('No direct access.');
 Licence: MIT / GPLv2+
 */
 
-if (!class_exists('Updraft_Manager_Updater_1_6')):
-class Updraft_Manager_Updater_1_6 {
+if (!class_exists('Updraft_Manager_Updater_1_7')):
+class Updraft_Manager_Updater_1_7 {
 
-	public $version = '1.6.2';
+	public $version = '1.7.0';
 
 	public $relative_plugin_file;
 	public $slug;
