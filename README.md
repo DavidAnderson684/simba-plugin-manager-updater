@@ -15,7 +15,7 @@ If you do not already have a composer.json file, then create one:
 ```
 {
     "require": {
-		"davidanderson684/simba-plugin-manager-updater": "1.7.*"
+		"davidanderson684/simba-plugin-manager-updater": "1.8.*"
     }
 }
 ```
@@ -48,7 +48,7 @@ If you are using composer, you should copy the updater.php file into your plugin
 
 updater.php is a very short file. Find this line ...
 
-`new Updraft_Manager_Updater_1_7('https://example.com/your/WP/mothership/homeurl', 1, 'plugin-dir/plugin-file.php');`
+`new Updraft_Manager_Updater_1_8('https://example.com/your/WP/mothership/homeurl', 1, 'plugin-dir/plugin-file.php');`
 
 ... and:
 
@@ -58,4 +58,4 @@ updater.php is a very short file. Find this line ...
 
 3. Change the plugin path to be the path (relative to the WP plugin directory, by default wp-content/plugins) to your plugin's main file.
 
-That's it!
+That's it! A fourth parameter is also available, an options array. Available options (specified as key/value pairs) include: debug (boolean), require_login (boolean), auto_backoff (boolean), interval_hours (integer).

@@ -6,10 +6,10 @@ if (!defined('ABSPATH')) die('No direct access.');
 Licence: MIT / GPLv2+
 */
 
-if (!class_exists('Updraft_Manager_Updater_1_7')):
-class Updraft_Manager_Updater_1_7 {
+if (!class_exists('Updraft_Manager_Updater_1_8')):
+class Updraft_Manager_Updater_1_8 {
 
-	public $version = '1.7.0';
+	public $version = '1.8.0';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -36,23 +36,23 @@ class Updraft_Manager_Updater_1_7 {
 	/**
 	 * Constructor
 	 *
-	 * @param String $mothership
+	 * @param String  $mothership
 	 * @param Integer $muid
-	 * @param String $relative_plugin_file
-	 * @param Integer $interval_hours
-	 * @param Boolean $auto_backoff
-	 * @param Boolean $debug
+	 * @param String  $relative_plugin_file
+	 * @param Array   $options - further options; keys: 'interval_hours' (integer), 'auto_backoff' (boolean), 'debug' (boolean), 'require_login' (boolean)
 	 */
-	public function __construct($mothership, $muid = 1, $relative_plugin_file, $interval_hours = 24, $auto_backoff = true, $debug = false) {
+	public function __construct($mothership, $muid, $relative_plugin_file, $options = array()) {
 
+		$this->auto_backoff = isset($options['auto_backoff']) ? $options['auto_backoff'] : true;
+		$this->debug = isset($options['debug']) ? $options['debug'] : false;
+		$this->require_login = isset($options['require_login']) ? $options['require_login'] : true;
+		$this->interval_hours = isset($options['interval_hours']) ? $options['interval_hours'] : 24;
+	
 		$this->relative_plugin_file = $relative_plugin_file;
 		$this->slug = dirname($relative_plugin_file);
 		$this->url = trailingslashit($mothership).'?muid='.$muid;
 		$this->muid = $muid;
-		$this->debug = $debug;
 		$this->ourdir = dirname(__FILE__);
-		$this->auto_backoff = $auto_backoff;
-		$this->interval_hours = $interval_hours;
 
 		// This needs to exactly match PluginUpdateChecker's view
 		$this->plugin_file = trailingslashit(WP_PLUGIN_DIR).$relative_plugin_file;
@@ -87,18 +87,7 @@ class Updraft_Manager_Updater_1_7 {
 		
 		add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 10, 2);
 	}
-	
-	/**
-	 * Indicate whether login is required prior to doing an updates check
-	 *
-	 * To force the pre-1.6.2 behaviour (even if the default changes in future) set to false
-	 *
-	 * @param Boolean $require_login
-	 */
-	public function set_require_login($require_login) {
-		$this->require_login = $require_login;
-	}
-	
+
 	/**
 	 * Loading of translations
 	 */

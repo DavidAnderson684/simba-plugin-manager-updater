@@ -1,10 +1,12 @@
 This project follows semantic versioning principles.
 
+# Upgrading from 1.7 to 1.8.
+
+You should alter the class name that you instantiate to Updraft_Manager_Updater_1_8. Also, the constructor signature has altered for more future flexibility. The first three parameters (mothership URL, owner UID, relative plugin file) are the same; but all parameters after that are replaced by a single (optional) fourth parameter, $options. All options are now passed via this array via key/value pairs. The previous parameters auto_backoff, debug, interval_hours are now (optional) keys in this array. A fourth option, require_login (boolean), is also available. It defaults in 1.8.0 to true (retaining the previous behaviour), but may change in future, so set it if you have a preference. If false, then updates checks will be made even if no credentials have (yet) been provided. This will enable showing updates information (but not actual updating) even when people have not authenticated, which may motivate them to authenticate.
+
 # Upgrading from 1.6 to 1.7.
 
-There are no API-breaking changes. You can use your code unmodified (beyond altering the class name that you instantiate from Updraft_Manager_Updater_1_6 to Updraft_Manager_Updater_1_7).
-
-A new method, set_require_login(), has been added. In version 1.7.0, updates checks can be carried out even if the user is not connected, to allow updates availabilty to be shown (as an incentive to connect). In this version, it is off by default; but you can call set_require_login(false) to disable this. Alternatively, call set_require_login(true) to lock-in the old behaviour (the default is expected to change in future).
+Ignore the 1.7 series; it added a new method (require_login()) that was ineffective for its purpose.
 
 # Upgrading from 1.5 to 1.6.
 
