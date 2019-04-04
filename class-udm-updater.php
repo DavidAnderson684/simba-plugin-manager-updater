@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_8')):
 class Updraft_Manager_Updater_1_8 {
 
-	public $version = '1.8.0';
+	public $version = '1.8.1';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -219,7 +219,7 @@ class Updraft_Manager_Updater_1_8 {
 						
 						$this->get_puc_updates_checker();
 						
-						// e.g. Puc_v4p5_Plugin_UpdateChecker
+						// e.g. Puc_v4p6_Plugin_UpdateChecker
 						$checker_class = get_class($this->plug_updatechecker);
 						
 						// Hopefully take off the 'Checker'. The setUpdate() call below wants a compatible version.
