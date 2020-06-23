@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_8')):
 class Updraft_Manager_Updater_1_8 {
 
-	public $version = '1.8.4';
+	public $version = '1.8.5';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -58,10 +58,6 @@ class Updraft_Manager_Updater_1_8 {
 		$this->plugin_file = trailingslashit(WP_PLUGIN_DIR).$relative_plugin_file;
 
 		if (!file_exists($this->plugin_file)) throw new Exception("Plugin file not found: ".$this->plugin_file);
-
-		if (!function_exists('get_plugin_data')) require_once(ABSPATH.'wp-admin/includes/plugin.php');
-
-		$this->plugin_data = get_plugin_data($this->plugin_file);
 
 		add_action('wp_ajax_udmupdater_ajax', array($this, 'udmupdater_ajax'));
 
@@ -363,7 +359,7 @@ class Updraft_Manager_Updater_1_8 {
 
 		$yourversionkey = 'x-spm-yourversion-tested';
 
-		$plugin_title = htmlspecialchars($this->plugin_data['Name']);
+		$plugin_title = htmlspecialchars($this->get_plugin_data('Name'));
 		$please_renew = __('please renew', 'udmupdater');
 		
 		if (is_object($oval) && !empty($oval->update) && is_object($oval->update) && !empty($oval->update->homepage)) {
@@ -499,8 +495,8 @@ class Updraft_Manager_Updater_1_8 {
 	 */
 	public function admin_notice_not_connected() {
 		echo '<div class="updated" id="udmupdater_not_connected">';
-		$plugin_label = htmlspecialchars($this->plugin_data['Name']);
-		echo apply_filters('udmupdater_updateradminnotice_header', '<h3>'.sprintf(__('Access to plugin updates (%s)', 'udmupdater'), $plugin_label).'</h3>', $this->plugin_data);
+		$plugin_label = htmlspecialchars($this->get_plugin_data('Name'));
+		echo apply_filters('udmupdater_updateradminnotice_header', '<h3>'.sprintf(__('Access to plugin updates (%s)', 'udmupdater'), $plugin_label).'</h3>', $this->get_plugin_data());
 		$this->print_plugin_connector_box();
 		echo '</div>';
 		echo "<script>
@@ -545,7 +541,7 @@ class Updraft_Manager_Updater_1_8 {
 							apply_filters('udmupdater_need_credentials_message', 
 								sprintf(
 									__('You need to enter both an email address and a %s', 'udmupdater'),
-									apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->plugin_data)
+									apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->get_plugin_data())
 								)
 							)
 						);?>');
@@ -575,7 +571,7 @@ class Updraft_Manager_Updater_1_8 {
 										alert(resp.msg);
 									} else {
 										alert('<?php echo esc_js(sprintf(
-											__('Your email address and %s were not recognised.', 'udmupdater'), apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->plugin_data)
+											__('Your email address and %s were not recognised.', 'udmupdater'), apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->get_plugin_data())
 										));?>');
 										console.log(resp);
 									}
@@ -719,25 +715,25 @@ class Updraft_Manager_Updater_1_8 {
 			add_action('admin_footer', array($this, 'admin_footer'));
 		}
 
-		$plugin_label = htmlspecialchars($this->plugin_data['Name']);
-		if (!empty($this->plugin_data['PluginURI'])) $plugin_label = '<a href="'.esc_attr($this->plugin_data['PluginURI']).'">'.$plugin_label.'</a>';
+		$plugin_label = htmlspecialchars($this->get_plugin_data('Name'));
+		if (!empty($this->get_plugin_data('PluginURI'))) $plugin_label = '<a href="'.esc_attr($this->get_plugin_data('PluginURI')).'">'.$plugin_label.'</a>';
 
 		?>
 		<div style="margin: 10px;  min-height: 36px;" class="udmupdater_box_<?php echo esc_attr($this->slug);?>">
 			<?php if ($this->is_connected()) { ?>
 			<div style="float: left; margin-right: 14px; margin-top: 4px;">
-				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('You are connected to receive updates for %s (login: %s)', 'udmupdater'), $plugin_label, htmlspecialchars($email)), $this->plugin_data, $this->slug); ?></em>: 
+				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('You are connected to receive updates for %s (login: %s)', 'udmupdater'), $plugin_label, htmlspecialchars($email)), $this->get_plugin_data(), $this->slug); ?></em>: 
 			</div>
 			<div class="udmupdater_userpassform udmupdater_userpassform_<?php echo esc_attr($this->slug);?>" style="float:left;">
 				<button class="button button-primary udmupdater-disconnect"><?php _e('Disconnect', 'udmupdater');?></button>
 			</div>
 			<?php } else { ?>
 			<div style="float: left; margin-right: 14px; margin-top: 4px;">
-				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('Please enter your customer login to access updates for %s', 'udmupdater'), $plugin_label), $this->plugin_data); ?></em>: 
+				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('Please enter your customer login to access updates for %s', 'udmupdater'), $plugin_label), $this->get_plugin_data()); ?></em>: 
 			</div>
 			<div class="udmupdater_userpassform udmupdater_userpassform_<?php echo esc_attr($this->slug);?>" style="float:left;">
 				<input type="text" style="width:180px;" placeholder="<?php echo esc_attr(__('Email', 'udmupdater')); ?>" name="email" value="">
-				<input type="password" style="width:180px;" placeholder="<?php echo esc_attr(ucfirst(apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->plugin_data))); ?>" name="password" value="">
+				<input type="password" style="width:180px;" placeholder="<?php echo esc_attr(ucfirst(apply_filters('udmupdater_password_description', __('password', 'udmupdater'), $this->slug, $this->get_plugin_data()))); ?>" name="password" value="">
 				<button class="button button-primary udmupdater-connect"><?php _e('Connect', 'udmupdater');?></button>
 			</div>
 			<?php } ?>
@@ -837,8 +833,8 @@ class Updraft_Manager_Updater_1_8 {
 			'lang' => get_locale()
 		);
 
-		if (isset($this->plugin_data['Version'])) {
-			$sinfo['pver'] = $this->plugin_data['Version'];
+		if ($this->get_plugin_data('Version')) {
+			$sinfo['pver'] = $this->get_plugin_data('Version');
 		}
 		
 		return $sinfo;
@@ -916,5 +912,23 @@ class Updraft_Manager_Updater_1_8 {
 		return $sid;
 	}
 
+	/**
+	 * Get the plugin's data.
+	 *
+	 * @param string $key - The key of the data required. Null by default (Null returns the whole plugin_data object).
+	 * @return mixed
+	 */
+	protected function get_plugin_data($key = '') {
+		static $plugin_data = null;
+		if (empty($plugin_data)) {
+			if (!function_exists('get_plugin_data')) require_once(ABSPATH.'wp-admin/includes/plugin.php');
+			$plugin_data = get_plugin_data($this->plugin_file);
+		}
+		if (!$key) return $plugin_data;
+		if (isset($plugin_data[$key])) {
+			return $plugin_data[$key];
+		}
+		return false;
+	}
 }
 endif;
