@@ -716,7 +716,7 @@ class Updraft_Manager_Updater_1_8 {
 		}
 
 		$plugin_label = htmlspecialchars($this->get_plugin_data('Name'));
-		if (!empty($this->get_plugin_data('PluginURI'))) $plugin_label = '<a href="'.esc_attr($this->get_plugin_data('PluginURI')).'">'.$plugin_label.'</a>';
+		if ($this->get_plugin_data('PluginURI')) $plugin_label = '<a href="'.esc_attr($this->get_plugin_data('PluginURI')).'">'.$plugin_label.'</a>';
 
 		?>
 		<div style="margin: 10px;  min-height: 36px;" class="udmupdater_box_<?php echo esc_attr($this->slug);?>">
