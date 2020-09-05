@@ -84,7 +84,7 @@ class Updraft_Manager_Updater_1_8 {
 		add_action('core_upgrade_preamble', array($this, 'core_upgrade_preamble'));
 		
 		/*
-			Maintain compatibility on all versions between WordPress and UpdraftPlus, specifically since WordPress 5.5 and UDM 1.8.8
+			Maintain compatibility on all versions between WordPress and UDM, specifically since WordPress 5.5 and UDM 1.8.8
 			Due to the new WP's auto-updates interface in WordPress version 5.5, we need to maintain the auto update compatibility on all versions of WordPress and UDM
 		*/
 		$this->remove_auto_update_option();
