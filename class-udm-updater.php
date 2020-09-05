@@ -164,7 +164,9 @@ class Updraft_Manager_Updater_1_8 {
 
 		if (!isset($item->slug) || $item->slug != $this->slug || !$this->allow_auto_updates) return $update;
 
-		$option_auto_update_settings = (array) get_site_option('auto_update_plugins', array());
+		$option_auto_update_settings = $this->get_option('auto_update_plugins');
+
+		if (!is_array($option_auto_update_settings)) $option_auto_update_settings = array();
 		
 		$update = in_array($item->plugin, $option_auto_update_settings, true);
 		
@@ -947,32 +949,37 @@ class Updraft_Manager_Updater_1_8 {
 	 * This needs to be done in order to maintain auto-updates compatibility between WordPress and UDM and to synchronise the auto-updates setting for both
 	 */
 	public function remove_auto_update_option() {
-		$options = get_site_option($this->option_name);
+		$options = $this->get_option($this->option_name);
+		if (!is_array($options)) $options = array();
 		$old_setting_value = isset($options['auto_update']) ? $options['auto_update'] : '';
 		unset($options['auto_update']);
-		$new_setting_value = (array) get_site_option('auto_update_plugins', array());
+		$this->update_option($this->option_name, $options);
+		$new_setting_value = $this->get_option('auto_update_plugins');
+		if (!is_array($new_setting_value)) $new_setting_value = array();
 		if (!empty($old_setting_value)) $new_setting_value[] = $this->relative_plugin_file;
 		$new_setting_value = array_unique($new_setting_value);
-		update_site_option('auto_update_plugins', $new_setting_value);
+		$this->update_option('auto_update_plugins', $new_setting_value);
 	}
 
 	/**
 	 * Enable automatic updates for UDM
 	 */
 	public function enable_automatic_updates() {
-		$auto_update_plugins = (array) get_site_option('auto_update_plugins', array());
+		$auto_update_plugins = $this->get_option('auto_update_plugins');
+		if (!is_array($auto_update_plugins)) $auto_update_plugins = array();
 		$auto_update_plugins[] = $this->relative_plugin_file;
 		$auto_update_plugins = array_unique($auto_update_plugins);
-		update_site_option('auto_update_plugins', $auto_update_plugins);
+		$this->update_option('auto_update_plugins', $auto_update_plugins);
 	}
 
 	/**
 	 * Disable automatic updates for UDM
 	 */
 	public function disable_automatic_updates() {
-		$auto_update_plugins = (array) get_site_option('auto_update_plugins', array());
+		$auto_update_plugins = $this->get_option('auto_update_plugins');
+		if (!is_array($auto_update_plugins)) $auto_update_plugins = array();
 		$auto_update_plugins = array_diff($auto_update_plugins, array($this->relative_plugin_file));
-		update_site_option('auto_update_plugins', $auto_update_plugins);
+		$this->update_option('auto_update_plugins', $auto_update_plugins);
 	}
 
 	/**
@@ -981,7 +988,8 @@ class Updraft_Manager_Updater_1_8 {
 	 * @return Boolean True if set, false otherwise
 	 */
 	public function is_automatic_updates() {
-		$auto_update_plugins = (array) get_site_option('auto_update_plugins', array());
+		$auto_update_plugins = $this->get_option('auto_update_plugins');
+		if (!is_array($auto_update_plugins)) $auto_update_plugins = array();
 		return in_array($this->relative_plugin_file, $auto_update_plugins, true);
 	}
 }
