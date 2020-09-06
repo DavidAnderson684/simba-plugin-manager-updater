@@ -87,7 +87,10 @@ class Updraft_Manager_Updater_1_8 {
 			Maintain compatibility on all versions between WordPress and UDM, specifically since WordPress 5.5 and UDM 1.8.8
 			Due to the new WP's auto-updates interface in WordPress version 5.5, we need to maintain the auto update compatibility on all versions of WordPress and UDM
 		*/
-		$this->remove_auto_update_option();
+		if (!$this->get_option('run_replace_auto_update_option_once')) {
+			$this->replace_auto_update_option();
+			$this->update_option('run_replace_auto_update_option_once', true);
+		}
 
 		if (version_compare($wp_version, '5.5', '<')) {
 			// Auto update plugin
@@ -948,7 +951,7 @@ class Updraft_Manager_Updater_1_8 {
 	 * Remove the use of auto_update index and its value from the *_updater_options option/meta (single/multisite) and change it to auto_update_plugins site option, which is also used by WordPress's core since version 5.5
 	 * This needs to be done in order to maintain auto-updates compatibility between WordPress and UDM and to synchronise the auto-updates setting for both
 	 */
-	public function remove_auto_update_option() {
+	public function replace_auto_update_option() {
 		$options = $this->get_option($this->option_name);
 		if (!is_array($options)) $options = array();
 		$old_setting_value = isset($options['auto_update']) ? $options['auto_update'] : '';
