@@ -45,6 +45,8 @@ class Updraft_Manager_Updater_1_8 {
 
 		global $wp_version;
 
+		include(ABSPATH.WPINC.'/version.php');
+
 		$this->auto_backoff = isset($options['auto_backoff']) ? $options['auto_backoff'] : true;
 		$this->debug = isset($options['debug']) ? $options['debug'] : false;
 		$this->require_login = isset($options['require_login']) ? $options['require_login'] : true;
@@ -83,13 +85,13 @@ class Updraft_Manager_Updater_1_8 {
 		add_action('load-plugins.php', array($this, 'load_plugins_php'));
 		add_action('core_upgrade_preamble', array($this, 'core_upgrade_preamble'));
 		
-		/*
-			Maintain compatibility on all versions between WordPress and UDM, specifically since WordPress 5.5 and UDM 1.8.8
-			Due to the new WP's auto-updates interface in WordPress version 5.5, we need to maintain the auto update compatibility on all versions of WordPress and UDM
-		*/
-		if (!$this->get_option('run_replace_auto_update_option_once')) {
+		/**
+		 * Maintain compatibility on all versions between WordPress and UDM, specifically since WordPress 5.5 and UDM 1.8.8
+		 * Due to the new WP's auto-updates interface in WordPress version 5.5, we need to maintain the auto update compatibility on all versions of WordPress and UDM
+		 */
+		$udm_options = $this->get_option($this->option_name);
+		if (empty($udm_options['run_replace_auto_update_option_once'])) {
 			$this->replace_auto_update_option();
-			$this->update_option('run_replace_auto_update_option_once', true);
 		}
 
 		if (version_compare($wp_version, '5.5', '<')) {
@@ -951,23 +953,24 @@ class Updraft_Manager_Updater_1_8 {
 	 * Remove the use of auto_update index and its value from the *_updater_options option/meta (single/multisite) and change it to auto_update_plugins site option, which is also used by WordPress's core since version 5.5
 	 * This needs to be done in order to maintain auto-updates compatibility between WordPress and UDM and to synchronise the auto-updates setting for both
 	 */
-	public function replace_auto_update_option() {
+	protected function replace_auto_update_option() {
 		$options = $this->get_option($this->option_name);
 		if (!is_array($options)) $options = array();
 		$old_setting_value = isset($options['auto_update']) ? $options['auto_update'] : '';
-		unset($options['auto_update']);
-		$this->update_option($this->option_name, $options);
 		$new_setting_value = $this->get_option('auto_update_plugins');
 		if (!is_array($new_setting_value)) $new_setting_value = array();
 		if (!empty($old_setting_value)) $new_setting_value[] = $this->relative_plugin_file;
 		$new_setting_value = array_unique($new_setting_value);
+		unset($options['auto_update']);
+		$options['run_replace_auto_update_option_once'] = true;
+		$this->update_option($this->option_name, $options);
 		$this->update_option('auto_update_plugins', $new_setting_value);
 	}
 
 	/**
 	 * Enable automatic updates for UDM
 	 */
-	public function enable_automatic_updates() {
+	protected function enable_automatic_updates() {
 		$auto_update_plugins = $this->get_option('auto_update_plugins');
 		if (!is_array($auto_update_plugins)) $auto_update_plugins = array();
 		$auto_update_plugins[] = $this->relative_plugin_file;
@@ -978,7 +981,7 @@ class Updraft_Manager_Updater_1_8 {
 	/**
 	 * Disable automatic updates for UDM
 	 */
-	public function disable_automatic_updates() {
+	protected function disable_automatic_updates() {
 		$auto_update_plugins = $this->get_option('auto_update_plugins');
 		if (!is_array($auto_update_plugins)) $auto_update_plugins = array();
 		$auto_update_plugins = array_diff($auto_update_plugins, array($this->relative_plugin_file));
@@ -990,7 +993,7 @@ class Updraft_Manager_Updater_1_8 {
 	 *
 	 * @return Boolean True if set, false otherwise
 	 */
-	public function is_automatic_updates() {
+	protected function is_automatic_updates() {
 		$auto_update_plugins = $this->get_option('auto_update_plugins');
 		if (!is_array($auto_update_plugins)) $auto_update_plugins = array();
 		return in_array($this->relative_plugin_file, $auto_update_plugins, true);
