@@ -760,7 +760,7 @@ class Updraft_Manager_Updater_1_8 {
 				$checkbox_id = 'udmupdater_autoupdate_'.$this->slug;
 				?>
 				<div class="udmupdater_autoupdate" style="clear:left;">
-					<input type="checkbox" id="<?php echo esc_attr($checkbox_id);?>" <?php if ($this->is_automatic_updates()) echo 'checked="checked"';?>>
+					<input type="checkbox" id="<?php echo esc_attr($checkbox_id);?>" <?php if ($this->is_automatic_updating_enabled()) echo 'checked="checked"';?>>
 					<label for="<?php echo esc_attr($checkbox_id);?>"><?php echo apply_filters('udmupdater_entercustomerlogin', __('Automatically update as soon as an update becomes available (N.B. other plugins can over-ride this setting).', 'udmupdater'), $this->slug);?></label>
 				</div>
 			<?php } ?>
@@ -993,7 +993,7 @@ class Updraft_Manager_Updater_1_8 {
 	 *
 	 * @return Boolean True if set, false otherwise
 	 */
-	protected function is_automatic_updates() {
+	protected function is_automatic_updating_enabled() {
 		$auto_update_plugins = $this->get_option('auto_update_plugins');
 		if (!is_array($auto_update_plugins)) $auto_update_plugins = array();
 		return in_array($this->relative_plugin_file, $auto_update_plugins, true);
