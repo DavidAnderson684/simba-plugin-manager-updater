@@ -169,9 +169,7 @@ class Updraft_Manager_Updater_1_8 {
 
 		if (!isset($item->slug) || $item->slug != $this->slug || !$this->allow_auto_updates) return $update;
 
-		$option_auto_update_settings = $this->get_option('auto_update_plugins');
-
-		if (!is_array($option_auto_update_settings)) $option_auto_update_settings = array();
+		$option_auto_update_settings = (array) get_site_option('auto_update_plugins', array());
 		
 		$update = in_array($item->plugin, $option_auto_update_settings, true);
 		
@@ -957,35 +955,32 @@ class Updraft_Manager_Updater_1_8 {
 		$options = $this->get_option($this->option_name);
 		if (!is_array($options)) $options = array();
 		$old_setting_value = isset($options['auto_update']) ? $options['auto_update'] : '';
-		$new_setting_value = $this->get_option('auto_update_plugins');
-		if (!is_array($new_setting_value)) $new_setting_value = array();
+		$new_setting_value = (array) get_site_option('auto_update_plugins', array());
 		if (!empty($old_setting_value)) $new_setting_value[] = $this->relative_plugin_file;
 		$new_setting_value = array_unique($new_setting_value);
 		unset($options['auto_update']);
 		$options['run_replace_auto_update_option_once'] = true;
 		$this->update_option($this->option_name, $options);
-		$this->update_option('auto_update_plugins', $new_setting_value);
+		update_site_option('auto_update_plugins', $auto_update_plugins);
 	}
 
 	/**
 	 * Enable automatic updates for UDM
 	 */
 	protected function enable_automatic_updates() {
-		$auto_update_plugins = $this->get_option('auto_update_plugins');
-		if (!is_array($auto_update_plugins)) $auto_update_plugins = array();
+		$auto_update_plugins = (array) get_site_option('auto_update_plugins', array());
 		$auto_update_plugins[] = $this->relative_plugin_file;
 		$auto_update_plugins = array_unique($auto_update_plugins);
-		$this->update_option('auto_update_plugins', $auto_update_plugins);
+		update_site_option('auto_update_plugins', $auto_update_plugins);
 	}
 
 	/**
 	 * Disable automatic updates for UDM
 	 */
 	protected function disable_automatic_updates() {
-		$auto_update_plugins = $this->get_option('auto_update_plugins');
-		if (!is_array($auto_update_plugins)) $auto_update_plugins = array();
+		$auto_update_plugins = (array) get_site_option('auto_update_plugins', array());
 		$auto_update_plugins = array_diff($auto_update_plugins, array($this->relative_plugin_file));
-		$this->update_option('auto_update_plugins', $auto_update_plugins);
+		update_site_option('auto_update_plugins', $auto_update_plugins);
 	}
 
 	/**
@@ -994,8 +989,7 @@ class Updraft_Manager_Updater_1_8 {
 	 * @return Boolean True if set, false otherwise
 	 */
 	protected function is_automatic_updating_enabled() {
-		$auto_update_plugins = $this->get_option('auto_update_plugins');
-		if (!is_array($auto_update_plugins)) $auto_update_plugins = array();
+		$auto_update_plugins = (array) get_site_option('auto_update_plugins', array());
 		return in_array($this->relative_plugin_file, $auto_update_plugins, true);
 	}
 }
