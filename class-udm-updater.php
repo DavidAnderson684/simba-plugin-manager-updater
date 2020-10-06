@@ -43,8 +43,6 @@ class Updraft_Manager_Updater_1_8 {
 	 */
 	public function __construct($mothership, $muid, $relative_plugin_file, $options = array()) {
 
-		global $wp_version;
-
 		include(ABSPATH.WPINC.'/version.php');
 
 		$this->auto_backoff = isset($options['auto_backoff']) ? $options['auto_backoff'] : true;
@@ -86,16 +84,15 @@ class Updraft_Manager_Updater_1_8 {
 		add_action('core_upgrade_preamble', array($this, 'core_upgrade_preamble'));
 		
 		/**
-		 * Maintain compatibility on all versions between WordPress and UDM, specifically since WordPress 5.5 and UDM 1.8.8
+		 * Maintain compatibility on all versions between WordPress and UDM, specifically since WordPress 5.5
 		 * Due to the new WP's auto-updates interface in WordPress version 5.5, we need to maintain the auto update compatibility on all versions of WordPress and UDM
 		 */
 		$udm_options = $this->get_option($this->option_name);
-		if (empty($udm_options['run_replace_auto_update_option_once'])) {
+		if (empty($udm_options['wp55_option_migrated'])) {
 			$this->replace_auto_update_option();
 		}
 
 		if (version_compare($wp_version, '5.5', '<')) {
-			// Auto update plugin
 			add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 20, 2);
 		}
 	}
@@ -959,9 +956,9 @@ class Updraft_Manager_Updater_1_8 {
 		if (!empty($old_setting_value)) $new_setting_value[] = $this->relative_plugin_file;
 		$new_setting_value = array_unique($new_setting_value);
 		unset($options['auto_update']);
-		$options['run_replace_auto_update_option_once'] = true;
+		$options['wp55_option_migrated'] = true;
 		$this->update_option($this->option_name, $options);
-		update_site_option('auto_update_plugins', $auto_update_plugins);
+		update_site_option('auto_update_plugins', $new_setting_value);
 	}
 
 	/**
