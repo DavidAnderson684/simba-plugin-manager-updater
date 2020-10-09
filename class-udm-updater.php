@@ -43,6 +43,8 @@ class Updraft_Manager_Updater_1_8 {
 	 */
 	public function __construct($mothership, $muid, $relative_plugin_file, $options = array()) {
 
+		include(ABSPATH.WPINC.'/version.php');
+
 		$this->auto_backoff = isset($options['auto_backoff']) ? $options['auto_backoff'] : true;
 		$this->debug = isset($options['debug']) ? $options['debug'] : false;
 		$this->require_login = isset($options['require_login']) ? $options['require_login'] : true;
@@ -81,7 +83,18 @@ class Updraft_Manager_Updater_1_8 {
 		add_action('load-plugins.php', array($this, 'load_plugins_php'));
 		add_action('core_upgrade_preamble', array($this, 'core_upgrade_preamble'));
 		
-		add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 10, 2);
+		/**
+		 * Maintain compatibility on all versions between WordPress and UDM, specifically since WordPress 5.5
+		 * Due to the new WP's auto-updates interface in WordPress version 5.5, we need to maintain the auto update compatibility on all versions of WordPress and UDM
+		 */
+		$udm_options = $this->get_option($this->option_name);
+		if (empty($udm_options['wp55_option_migrated'])) {
+			$this->replace_auto_update_option();
+		}
+
+		if (version_compare($wp_version, '5.5', '<')) {
+			add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 20, 2);
+		}
 	}
 
 	/**
@@ -152,10 +165,10 @@ class Updraft_Manager_Updater_1_8 {
 	public function auto_update_plugin($update, $item) {
 
 		if (!isset($item->slug) || $item->slug != $this->slug || !$this->allow_auto_updates) return $update;
-		
-		$options = $this->get_option($this->option_name);
 
-		if (is_array($options) && !empty($options['auto_update'])) $update = true;
+		$option_auto_update_settings = (array) get_site_option('auto_update_plugins', array());
+		
+		$update = in_array($item->plugin, $option_auto_update_settings, true);
 		
 		if ($this->debug) error_log("udm_updater: ".$this->slug." auto update decision: ".$update);
 		
@@ -312,10 +325,11 @@ class Updraft_Manager_Updater_1_8 {
 		
 			$auto_update = empty($_REQUEST['auto_update']) ? false : true;
 			
-			$option = $this->get_option($this->option_name);
-			if (!is_array($option)) $option = array();
-			$option['auto_update'] = $auto_update;
-			$this->update_option($this->option_name, $option);
+			if ($auto_update) {
+				$this->enable_automatic_updates();
+			} else {
+				$this->disable_automatic_updates();
+			}
 			
 			echo json_encode(array(
 				'code' => $auto_update ? 'active' : 'inactive',
@@ -738,11 +752,10 @@ class Updraft_Manager_Updater_1_8 {
 			</div>
 			<?php } ?>
 			<?php if (apply_filters('udmupdater_autoupdate_form', $this->allow_auto_updates, $this->slug)) {
-				$auto_update = empty($options['auto_update']) ? false : true;
 				$checkbox_id = 'udmupdater_autoupdate_'.$this->slug;
 				?>
 				<div class="udmupdater_autoupdate" style="clear:left;">
-					<input type="checkbox" id="<?php echo esc_attr($checkbox_id);?>" <?php if ($auto_update) echo 'checked="checked"';?>>
+					<input type="checkbox" id="<?php echo esc_attr($checkbox_id);?>" <?php if ($this->is_automatic_updating_enabled()) echo 'checked="checked"';?>>
 					<label for="<?php echo esc_attr($checkbox_id);?>"><?php echo apply_filters('udmupdater_entercustomerlogin', __('Automatically update as soon as an update becomes available (N.B. other plugins can over-ride this setting).', 'udmupdater'), $this->slug);?></label>
 				</div>
 			<?php } ?>
@@ -929,6 +942,52 @@ class Updraft_Manager_Updater_1_8 {
 			return $plugin_data[$key];
 		}
 		return false;
+	}
+
+	/**
+	 * Remove the use of auto_update index and its value from the *_updater_options option/meta (single/multisite) and change it to auto_update_plugins site option, which is also used by WordPress's core since version 5.5
+	 * This needs to be done in order to maintain auto-updates compatibility between WordPress and UDM and to synchronise the auto-updates setting for both
+	 */
+	protected function replace_auto_update_option() {
+		$options = $this->get_option($this->option_name);
+		if (!is_array($options)) $options = array();
+		$old_setting_value = isset($options['auto_update']) ? $options['auto_update'] : '';
+		$new_setting_value = (array) get_site_option('auto_update_plugins', array());
+		if (!empty($old_setting_value)) $new_setting_value[] = $this->relative_plugin_file;
+		$new_setting_value = array_unique($new_setting_value);
+		unset($options['auto_update']);
+		$options['wp55_option_migrated'] = true;
+		$this->update_option($this->option_name, $options);
+		update_site_option('auto_update_plugins', $new_setting_value);
+	}
+
+	/**
+	 * Enable automatic updates for UDM
+	 */
+	protected function enable_automatic_updates() {
+		$auto_update_plugins = (array) get_site_option('auto_update_plugins', array());
+		$auto_update_plugins[] = $this->relative_plugin_file;
+		$auto_update_plugins = array_unique($auto_update_plugins);
+		update_site_option('auto_update_plugins', $auto_update_plugins);
+	}
+
+	/**
+	 * Disable automatic updates for UDM
+	 */
+	protected function disable_automatic_updates() {
+		$auto_update_plugins = (array) get_site_option('auto_update_plugins', array());
+		$auto_update_plugins = array_diff($auto_update_plugins, array($this->relative_plugin_file));
+		update_site_option('auto_update_plugins', $auto_update_plugins);
+	}
+
+	/**
+	 * Check whether the automatic-updates is set for UDM
+	 *
+	 * @return Boolean True if set, false otherwise
+	 */
+	protected function is_automatic_updating_enabled() {
+		$auto_update_plugins = (array) get_site_option('auto_update_plugins', array());
+		return in_array($this->relative_plugin_file, $auto_update_plugins, true);
 	}
 }
 endif;
