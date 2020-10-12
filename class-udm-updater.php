@@ -30,6 +30,7 @@ class Updraft_Manager_Updater_1_8 {
 	
 	private $option_name;
 	private $admin_notices = array();
+	private $udmupdaterl10n;
 	
 	public $require_login = true;
 	
@@ -67,6 +68,11 @@ class Updraft_Manager_Updater_1_8 {
 
 		// Prevent updates from wordpress.org showing in all circumstances. Run with lower than default priority, to allow later processes to add something.
 		add_filter('site_transient_update_plugins', array($this, 'site_transient_update_plugins'), 9);
+
+		$this->udmupdaterl10n = array(
+			'duplicate_site_id1' => esc_js(__('There appears to be something wrong with your licence, please connect again to receive updates.', 'udmupdater')),
+			'duplicate_site_id2' => esc_js(__('This site was previously sharing a single licence also used another site (URL), probably because of being duplicated - this resulted in it being disconnected', 'udmupdater')),
+		);
 
 		// Expiry notices
 		add_action(is_multisite() ? 'network_admin_menu' : 'admin_menu', array($this, 'admin_menu'));
@@ -422,6 +428,7 @@ class Updraft_Manager_Updater_1_8 {
 	public function admin_footer() {
 		?>
 		<script>
+			var $udmupdaterl10n = <?php echo json_encode($this->udmupdaterl10n, JSON_PRETTY_PRINT)."\n"; ?>
 			jQuery(function($) {
 				var nonce = '<?php echo esc_js(wp_create_nonce('udmupdater-ajax-nonce')); ?>';
 				$('.udmupdater_userpassform_<?php echo esc_js($this->slug);?> .udmupdater-connect').on('click', function() {
@@ -469,8 +476,15 @@ class Updraft_Manager_Updater_1_8 {
 										console.log(resp);
 									}
 								} else if (resp.code == 'OK') {
-									alert('<?php echo esc_js(__('You have successfully connected for access to updates to this plugin.', 'udmupdater'));?>');
-									$('.udmupdater_box_<?php echo esc_js($this->slug);?>').parent().slideUp();
+									if (resp.hasOwnProperty('data') && resp.data.hasOwnProperty('plugin_info') && resp.data.plugin_info.hasOwnProperty('x-spm-duplicate-of')) {
+										alert($udmupdaterl10n.duplicate_site_id1);
+										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').empty().text($udmupdaterl10n.duplicate_site_id2);
+										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').slideDown();
+									} else {
+										alert('<?php echo esc_js(__('You have successfully connected for access to updates to this plugin.', 'udmupdater'));?>');
+										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').empty();
+										$('.udmupdater_box_<?php echo esc_js($this->slug);?>').parent().slideUp();
+									}
 								} else if (resp.code == 'ERR') {
 									alert('<?php echo esc_js(__('Your login was accepted, but no available entitlement for this plugin was found.', 'udmupdater').' '.__('Has your licence expired, or have you used all your available licences elsewhere?', 'udmupdater'));?>');
 									console.log(resp);
@@ -602,6 +616,7 @@ class Updraft_Manager_Updater_1_8 {
 
 		$options = $this->get_option($this->option_name);
 		$email = isset($options['email']) ? $options['email'] : '';
+		$duplicate_site = empty($options['duplicate_site']) ? false : true;
 
 		if (empty($this->connector_footer_added)) {
 			$this->connector_footer_added = true;
@@ -621,6 +636,7 @@ class Updraft_Manager_Updater_1_8 {
 				<button class="button button-primary udmupdater-disconnect"><?php _e('Disconnect', 'udmupdater');?></button>
 			</div>
 			<?php } else { ?>
+			<div class="udmupdater_duplicate_site_warning" style="<?php if (!$duplicate_site) echo 'display: none'; ?>"><?php if ($duplicate_site) echo $this->udmupdaterl10n['duplicate_site_id2']; ?></div>
 			<div style="float: left; margin-right: 14px; margin-top: 4px;">
 				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('Please enter your customer login to access updates for %s', 'udmupdater'), $plugin_label), $this->get_plugin_data()); ?></em>: 
 			</div>
