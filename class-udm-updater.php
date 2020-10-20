@@ -488,6 +488,10 @@ class Updraft_Manager_Updater_1_8 {
 								} else if (resp.code == 'ERR') {
 									alert('<?php echo esc_js(__('Your login was accepted, but no available entitlement for this plugin was found.', 'udmupdater').' '.__('Has your licence expired, or have you used all your available licences elsewhere?', 'udmupdater'));?>');
 									console.log(resp);
+								} else {
+									if (resp.hasOwnProperty('data') && resp.data.hasOwnProperty('plugin_info') && resp.data.plugin_info.hasOwnProperty('duplicate_site_is_connected')) {
+										alert($udmupdaterl10n.duplicate_site_id1);
+									}
 								}
 							} else {
 								alert('<?php echo esc_js(__('The response from the remote site could not be decoded. (More information is recorded in the browser console).', 'udmupdater'));?>');
@@ -616,7 +620,7 @@ class Updraft_Manager_Updater_1_8 {
 
 		$options = $this->get_option($this->option_name);
 		$email = isset($options['email']) ? $options['email'] : '';
-		$duplicate_site = empty($options['duplicate_site']) ? false : true;
+		$duplicate_site = isset($options['duplicate_site_is_connected']) && false === $options['duplicate_site_is_connected'];
 
 		if (empty($this->connector_footer_added)) {
 			$this->connector_footer_added = true;
