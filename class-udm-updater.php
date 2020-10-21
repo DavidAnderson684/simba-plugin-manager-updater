@@ -74,10 +74,28 @@ class Updraft_Manager_Updater_1_8 {
 			'duplicate_site_id2' => esc_js(__('This site was previously sharing a single licence also used another site (URL), probably because of being duplicated - this resulted in it being disconnected', 'udmupdater')),
 		);
 
+		$this->option_name = $this->slug.'_updater_options';
+
+		$this->get_puc_updates_checker();
+
+		$udm_options = $this->get_option($this->option_name);
+		$site_url = parse_url(site_url());
+		$site_host_path = isset($site_url['host']) ? $site_url['host'] : '';
+		$site_host_path .= isset($site_url['path']) ? $site_url['path'] : '';
+		$host_path_not_exist = false;
+		/**
+		 * if it's a cloned site, other plugin that uses the same site ID may have still connected, just unset the email and clear the PUC update cache so that when the users reconnect they get the warning message about the duplicate site ID issue
+		 * any releases of UDM that doesn't have `site_host_path` option must first have their `email` option unset and PUC update cache reset including any plugin that was cloned from a site where the plugin is still connected and has a different url site compared to the site_host_path
+		 */
+		if (empty($udm_options['site_host_path']) || (!empty($udm_options['email']) && strtolower($udm_options['site_host_path']) !== strtolower($site_host_path))) {
+			unset($udm_options['email']);
+			$udm_options['site_host_path'] = $site_host_path;
+			$this->plug_updatechecker->resetUpdateState();
+		}
+		$this->update_option($this->option_name, $udm_options);
+
 		// Expiry notices
 		add_action(is_multisite() ? 'network_admin_menu' : 'admin_menu', array($this, 'admin_menu'));
-
-		$this->option_name = $this->slug.'_updater_options';
 
 		if (did_action('init')) {
 			$this->load_text_domain();
@@ -85,8 +103,6 @@ class Updraft_Manager_Updater_1_8 {
 			add_action('init', array($this, 'load_text_domain'));
 		}
 		
-		$this->get_puc_updates_checker();
-
 		add_action("after_plugin_row_$relative_plugin_file", array($this, 'after_plugin_row'), 10, 2 );
 		add_action('load-plugins.php', array($this, 'load_plugins_php'));
 		add_action('core_upgrade_preamble', array($this, 'core_upgrade_preamble'));
