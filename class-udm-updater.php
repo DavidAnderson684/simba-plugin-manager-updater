@@ -70,8 +70,9 @@ class Updraft_Manager_Updater_1_8 {
 		add_filter('site_transient_update_plugins', array($this, 'site_transient_update_plugins'), 9);
 
 		$this->udmupdaterl10n = array(
-			'duplicate_site_id1' => esc_js(__('There appears to be something wrong with your licence, please connect again to receive updates.', 'udmupdater')),
-			'duplicate_site_id2' => esc_js(__('This site was previously sharing a single licence also used another site (URL), probably because of being duplicated - this resulted in it being disconnected', 'udmupdater')),
+			'duplicate_site_id1' => esc_js(__("Your attempt to connect to the updates server was unsuccessful due to duplicate site IDs. However, the server has disconnected the site that relates to the detected site ID. Please connect again to claim this site and to receive updates.", 'udmupdater')),
+			'duplicate_site_id2' => esc_js(__('This site was previously sharing a single licence also used another site (URL), probably because of being duplicated — this resulted in it being disconnected', 'udmupdater')),
+			'duplicate_site_id3' => esc_js(__('The updates server has detected duplicate site IDs and was unable to disconnect the site that relates to the detected site ID due to network timeout. Please connect again to claim this site and to receive updates.', 'udmupdater')),
 		);
 
 		// Expiry notices
@@ -518,7 +519,7 @@ class Updraft_Manager_Updater_1_8 {
 									console.log(resp);
 								} else {
 									if (resp.hasOwnProperty('data') && resp.data.hasOwnProperty('plugin_info') && resp.data.plugin_info.hasOwnProperty('duplicate_site_is_connected')) {
-										alert($udmupdaterl10n.duplicate_site_id1);
+										alert($udmupdaterl10n.duplicate_site_id3);
 									}
 								}
 							} else {
