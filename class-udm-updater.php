@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_8')):
 class Updraft_Manager_Updater_1_8 {
 
-	public $version = '1.8.8';
+	public $version = '1.8.9';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -514,7 +514,7 @@ class Updraft_Manager_Updater_1_8 {
 		$this->print_plugin_connector_box();
 		echo '</div>';
 		echo "<script>
-		jQuery(document).ready(function() {
+		jQuery(function() {
 			jQuery('#udmupdater_not_connected').appendTo('.wrap p:first');
 		});
 		</script>";
