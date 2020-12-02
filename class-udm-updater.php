@@ -506,8 +506,8 @@ class Updraft_Manager_Updater_1_8 {
 									}
 								} else if (resp.code == 'OK') {
 									if (resp.hasOwnProperty('data') && resp.data.hasOwnProperty('plugin_info') && resp.data.plugin_info.hasOwnProperty('x-spm-duplicate-of')) {
-										alert($udmupdaterl10n.duplicate_site_id1);
-										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').empty().text($udmupdaterl10n.duplicate_site_id2);
+										alert(udmupdaterl10n.duplicate_site_id1);
+										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').empty().text(udmupdaterl10n.duplicate_site_id2);
 										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').slideDown();
 									} else {
 										alert('<?php echo esc_js(__('You have successfully connected for access to updates to this plugin.', 'udmupdater'));?>');
@@ -519,7 +519,7 @@ class Updraft_Manager_Updater_1_8 {
 									console.log(resp);
 								} else {
 									if (resp.hasOwnProperty('data') && resp.data.hasOwnProperty('plugin_info') && resp.data.plugin_info.hasOwnProperty('duplicate_site_is_connected')) {
-										alert($udmupdaterl10n.duplicate_site_id3);
+										alert(udmupdaterl10n.duplicate_site_id3);
 									}
 								}
 							} else {
