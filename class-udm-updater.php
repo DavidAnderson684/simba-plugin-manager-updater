@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_8')):
 class Updraft_Manager_Updater_1_8 {
 
-	public $version = '1.8.9';
+	public $version = '1.8.10';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -545,7 +545,7 @@ class Updraft_Manager_Updater_1_8 {
 		<script>
 			jQuery(document).ready(function($) {
 				var nonce = '<?php echo esc_js(wp_create_nonce('udmupdater-ajax-nonce')); ?>';
-				$('.udmupdater_userpassform_<?php echo esc_js($this->slug);?> .udmupdater-connect').click(function() {
+				$('.udmupdater_userpassform_<?php echo esc_js($this->slug);?> .udmupdater-connect').on('click', function() {
 					var button = this;
 					var $box = $(this).closest('.udmupdater_userpassform');
 					var email = $box.find('input[name="email"]').val();
@@ -650,7 +650,7 @@ class Updraft_Manager_Updater_1_8 {
 					});
 				});
 
-				$('.udmupdater_userpassform_<?php echo esc_js($this->slug);?> .udmupdater-disconnect').click(function() {
+				$('.udmupdater_userpassform_<?php echo esc_js($this->slug);?> .udmupdater-disconnect').on('click', function() {
 					var button = this;
 					var $box = $(this).closest('.udmupdater_userpassform');
 					var sdata = {
