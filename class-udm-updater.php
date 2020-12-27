@@ -947,7 +947,7 @@ class Updraft_Manager_Updater_1_8 {
 	/**
 	 * Disconnect access to updates to the plugin
 	 */
-	public function disconnect() {
+	protected function disconnect() {
 		$options = $this->get_option($this->option_name);
 
 		if (empty($options['email'])) {
