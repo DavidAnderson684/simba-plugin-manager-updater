@@ -987,10 +987,15 @@ class Updraft_Manager_Updater_1_8 {
 				}
 
 			} elseif (is_wp_error($result)) {
-				echo __('Errors occurred:','udmupdater').'<br>';
-				show_message($result);
+				echo json_encode(array(
+					'code' => 'WP_ERROR',
+					'data' => __('Errors occurred:','udmupdater').' '.$result->get_error_message()
+				));
 			} else {
-				echo __('Errors occurred:','udmupdater').' '.htmlspecialchars(serialize($result));
+				echo json_encode(array(
+					'code' => 'UNKNOWN_ERR',
+					'data' => __('Errors occurred:','udmupdater').' '.htmlspecialchars(serialize($result))
+				));
 			}
 		}
 	}
