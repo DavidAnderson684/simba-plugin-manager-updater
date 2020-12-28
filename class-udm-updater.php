@@ -70,9 +70,7 @@ class Updraft_Manager_Updater_1_8 {
 		add_filter('site_transient_update_plugins', array($this, 'site_transient_update_plugins'), 9);
 
 		$this->udmupdaterl10n = array(
-			'duplicate_site_id1' => esc_js(__("Your attempt to connect to the updates server was unsuccessful due to duplicate site IDs. However, the server has disconnected the site that relates to the detected site ID. Please connect again to claim this site and to receive updates.", 'udmupdater')),
-			'duplicate_site_id2' => esc_js(__('This site was previously sharing a single licence also used another site (URL), probably because of being duplicated — this resulted in it being disconnected', 'udmupdater')),
-			'duplicate_site_id3' => esc_js(__('The updates server has detected duplicate site IDs and was unable to disconnect the site that relates to the detected site ID due to network timeout. Please connect again to claim this site and to receive updates.', 'udmupdater')),
+			'duplicate_site_id' => esc_js(__('This site was previously sharing a single licence also used another site (URL), probably because of being duplicated — this resulted in it being disconnected', 'udmupdater'))
 		);
 
 		// Expiry notices
@@ -506,8 +504,7 @@ class Updraft_Manager_Updater_1_8 {
 									}
 								} else if (resp.code == 'OK') {
 									if (resp.hasOwnProperty('data') && resp.data.hasOwnProperty('plugin_info') && resp.data.plugin_info.hasOwnProperty('x-spm-duplicate-of')) {
-										alert(udmupdaterl10n.duplicate_site_id1);
-										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').empty().text(udmupdaterl10n.duplicate_site_id2);
+										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').empty().text(udmupdaterl10n.duplicate_site_id);
 										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').slideDown();
 									} else {
 										alert('<?php echo esc_js(__('You have successfully connected for access to updates to this plugin.', 'udmupdater'));?>');
@@ -518,8 +515,11 @@ class Updraft_Manager_Updater_1_8 {
 									alert('<?php echo esc_js(__('Your login was accepted, but no available entitlement for this plugin was found.', 'udmupdater').' '.__('Has your licence expired, or have you used all your available licences elsewhere?', 'udmupdater'));?>');
 									console.log(resp);
 								} else {
-									if (resp.hasOwnProperty('data') && resp.data.hasOwnProperty('plugin_info') && resp.data.plugin_info.hasOwnProperty('duplicate_site_is_connected')) {
-										alert(udmupdaterl10n.duplicate_site_id3);
+									if (resp.hasOwnProperty('data') && resp.hasOwnProperty('duplicate_site_is_connected')) {
+										// at this stage the resp.code would either be WP_ERROR or UNKNOWN_ERR
+										// if WP_ERROR then it could mean the updates server has detected duplicate site IDs and was unable to disconnect the site that relates to the detected site ID possibly due to connectivity issue (e.g. network timeout)
+										alert(resp.data);
+										console.log(resp);
 									}
 								}
 							} else {
@@ -669,7 +669,7 @@ class Updraft_Manager_Updater_1_8 {
 				<button class="button button-primary udmupdater-disconnect"><?php _e('Disconnect', 'udmupdater');?></button>
 			</div>
 			<?php } else { ?>
-			<div class="udmupdater_duplicate_site_warning" style="<?php if (!$duplicate_site) echo 'display: none'; ?>"><?php if ($duplicate_site) echo $this->udmupdaterl10n['duplicate_site_id2']; ?></div>
+			<div class="udmupdater_duplicate_site_warning" style="<?php if (!$duplicate_site) echo 'display: none'; ?>"><?php if ($duplicate_site) echo $this->udmupdaterl10n['duplicate_site_id']; ?></div>
 			<div style="float: left; margin-right: 14px; margin-top: 4px;">
 				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('Please enter your customer login to access updates for %s', 'udmupdater'), $plugin_label), $this->get_plugin_data()); ?></em>: 
 			</div>
