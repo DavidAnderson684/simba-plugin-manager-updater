@@ -515,7 +515,7 @@ class Updraft_Manager_Updater_1_8 {
 		echo '</div>';
 		echo "<script>
 		jQuery(function() {
-			jQuery('#udmupdater_not_connected').appendTo('.wrap p:first');
+			jQuery('#udmupdater_not_connected').appendTo('.wrap p').first();
 		});
 		</script>";
 	}
@@ -543,7 +543,7 @@ class Updraft_Manager_Updater_1_8 {
 	public function admin_footer() {
 		?>
 		<script>
-			jQuery(document).ready(function($) {
+			jQuery(function($) {
 				var nonce = '<?php echo esc_js(wp_create_nonce('udmupdater-ajax-nonce')); ?>';
 				$('.udmupdater_userpassform_<?php echo esc_js($this->slug);?> .udmupdater-connect').on('click', function() {
 					var button = this;
@@ -610,7 +610,7 @@ class Updraft_Manager_Updater_1_8 {
 					return false;
 				});
 
-				$('#udmupdater_autoupdate_<?php echo esc_js($this->slug);?>').change(function() {
+				$('#udmupdater_autoupdate_<?php echo esc_js($this->slug);?>').on('change', function() {
 					
 					var checked = $(this).is(':checked') ? 1 : 0;
 					
