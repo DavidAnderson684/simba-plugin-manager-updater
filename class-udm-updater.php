@@ -514,8 +514,8 @@ class Updraft_Manager_Updater_1_8 {
 		$this->print_plugin_connector_box();
 		echo '</div>';
 		echo "<script>
-		jQuery(function() {
-			jQuery('#udmupdater_not_connected').appendTo('.wrap p').first();
+		jQuery(window).on('load', function() {
+			jQuery('#udmupdater_not_connected').appendTo(jQuery('#wpbody-content div.wrap form').first());
 		});
 		</script>";
 	}
