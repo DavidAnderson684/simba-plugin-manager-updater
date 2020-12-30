@@ -508,7 +508,7 @@ class Updraft_Manager_Updater_1_8 {
 	 * Output the contents of an admin notice
 	 */
 	public function admin_notice_not_connected() {
-		echo '<div class="updated" id="udmupdater_not_connected">';
+		echo '<div class="updated" id="udmupdater_not_connected" style="width: 97%; float:left">';
 		$plugin_label = htmlspecialchars($this->get_plugin_data('Name'));
 		echo apply_filters('udmupdater_updateradminnotice_header', '<h3>'.sprintf(__('Access to plugin updates (%s)', 'udmupdater'), $plugin_label).'</h3>', $this->get_plugin_data());
 		$this->print_plugin_connector_box();
