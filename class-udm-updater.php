@@ -508,14 +508,14 @@ class Updraft_Manager_Updater_1_8 {
 	 * Output the contents of an admin notice
 	 */
 	public function admin_notice_not_connected() {
-		echo '<div class="updated" id="udmupdater_not_connected">';
+		echo '<div class="updated" id="udmupdater_not_connected" style="width: 97%; float:left">';
 		$plugin_label = htmlspecialchars($this->get_plugin_data('Name'));
 		echo apply_filters('udmupdater_updateradminnotice_header', '<h3>'.sprintf(__('Access to plugin updates (%s)', 'udmupdater'), $plugin_label).'</h3>', $this->get_plugin_data());
 		$this->print_plugin_connector_box();
 		echo '</div>';
 		echo "<script>
-		jQuery(function() {
-			jQuery('#udmupdater_not_connected').appendTo('.wrap p:first');
+		jQuery(window).on('load', function() {
+			jQuery('#udmupdater_not_connected').appendTo(jQuery('#wpbody-content div.wrap form').first());
 		});
 		</script>";
 	}
@@ -543,7 +543,7 @@ class Updraft_Manager_Updater_1_8 {
 	public function admin_footer() {
 		?>
 		<script>
-			jQuery(document).ready(function($) {
+			jQuery(function($) {
 				var nonce = '<?php echo esc_js(wp_create_nonce('udmupdater-ajax-nonce')); ?>';
 				$('.udmupdater_userpassform_<?php echo esc_js($this->slug);?> .udmupdater-connect').on('click', function() {
 					var button = this;
@@ -610,7 +610,7 @@ class Updraft_Manager_Updater_1_8 {
 					return false;
 				});
 
-				$('#udmupdater_autoupdate_<?php echo esc_js($this->slug);?>').change(function() {
+				$('#udmupdater_autoupdate_<?php echo esc_js($this->slug);?>').on('change', function() {
 					
 					var checked = $(this).is(':checked') ? 1 : 0;
 					
