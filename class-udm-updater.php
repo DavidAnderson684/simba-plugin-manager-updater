@@ -506,8 +506,9 @@ class Updraft_Manager_Updater_1_8 {
 									if (resp.hasOwnProperty('was_previously_sharing_licence')) {
 										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').empty().text(udmupdaterl10n.duplicate_site_id);
 										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').slideDown();
-									} else {
-										alert('<?php echo esc_js(__('You have successfully connected for access to updates to this plugin.', 'udmupdater'));?>');
+									}
+									alert('<?php echo esc_js(__('You have successfully connected for access to updates to this plugin.', 'udmupdater'));?>');
+									if (!resp.hasOwnProperty('was_previously_sharing_licence')) {
 										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').empty();
 										$('.udmupdater_box_<?php echo esc_js($this->slug);?>').parent().slideUp();
 									}
