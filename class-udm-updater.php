@@ -516,12 +516,8 @@ class Updraft_Manager_Updater_1_8 {
 									alert('<?php echo esc_js(__('Your login was accepted, but no available entitlement for this plugin was found.', 'udmupdater').' '.__('Has your licence expired, or have you used all your available licences elsewhere?', 'udmupdater'));?>');
 									console.log(resp);
 								} else {
-									if (resp.hasOwnProperty('duplicate_site_is_connected') && resp.duplicate_site_is_connected) {
-										// at this stage the resp.code would either be WP_ERROR or UNKNOWN_ERR
-										// if WP_ERROR then it could mean the updates server has detected duplicate site IDs and was unable to disconnect the site that relates to the detected site ID possibly due to connectivity issue (e.g. network timeout)
-										alert(resp.data);
-									}
 									console.log(resp);
+									alert(resp.data);
 								}
 							} else {
 								alert('<?php echo esc_js(__('The response from the remote site could not be decoded. (More information is recorded in the browser console).', 'udmupdater'));?>');
