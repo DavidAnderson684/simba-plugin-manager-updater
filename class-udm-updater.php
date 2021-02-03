@@ -266,53 +266,7 @@ class Updraft_Manager_Updater_1_8 {
 			die;
 
 		} elseif ('disconnect' == $_REQUEST['subaction'] && current_user_can('update_plugins')) {
-
-			$options = $this->get_option($this->option_name);
-
-			if (empty($options['email'])) {
-				echo json_encode(array(
-					'code' => 'INVALID',
-					'data' => 'Not connected (no email found)'
-				));
-			} else {
-				$result = wp_remote_post($this->url.'&udm_action=releaseaddon&slug='.urlencode($_POST['slug']).'&e='.urlencode($options['email']),
-					apply_filters('udmupdater_wp_api_options', array(
-						'timeout' => 10,
-						'body' => array(
-							'e' => $options['email'],
-							'sid' => $this->site_id(),
-							'slug' => $_POST['slug']
-						)
-					), 'releaseaddon')
-				);
-
-				if (is_array($result) && isset($result['body'])) {
-
-					$decoded = json_decode($result['body'], true);
-					if (empty($decoded)) {
-						echo json_encode(array(
-							'code' => 'INVALID',
-							'data' => $result['body']
-						));
-					} else {
-						echo $result['body'];
-						// Disconnect if their email address was not recognised; they probably changed it (and they're not going to be able to get any updates if it's not recognised anyway).
-						if (isset($decoded['code']) && ('OK' == $decoded['code'] || ('BADAUTH' == $decoded['code'] && isset($decoded['data']) && 'invaliduser' === $decoded['data']))) {
-							$option = $this->get_option($this->option_name);
-							if (!is_array($option)) $option = array();
-							unset($option['email']);
-							$this->update_option($this->option_name, $option);
-						}
-					}
-
-				} elseif (is_wp_error($result)) {
-					echo __('Errors occurred:','udmupdater').'<br>';
-					show_message($result);
-				} else {
-					echo __('Errors occurred:','udmupdater').' '.htmlspecialchars(serialize($result));
-				}
-			}
-
+			$this->disconnect();
 			die();
 		} elseif ('dismissexpiry' == $_REQUEST['subaction']) {
 
@@ -988,6 +942,62 @@ class Updraft_Manager_Updater_1_8 {
 	protected function is_automatic_updating_enabled() {
 		$auto_update_plugins = (array) get_site_option('auto_update_plugins', array());
 		return in_array($this->relative_plugin_file, $auto_update_plugins, true);
+	}
+
+	/**
+	 * Disconnect access to updates to the plugin
+	 */
+	protected function disconnect() {
+		$options = $this->get_option($this->option_name);
+
+		if (empty($options['email'])) {
+			echo json_encode(array(
+				'code' => 'INVALID',
+				'data' => 'Not connected (no email found)'
+			));
+		} else {
+			$result = wp_remote_post($this->url.'&udm_action=releaseaddon&slug='.urlencode($_POST['slug']).'&e='.urlencode($options['email']),
+				apply_filters('udmupdater_wp_api_options', array(
+					'timeout' => 10,
+					'body' => array(
+						'e' => $options['email'],
+						'sid' => $this->site_id(),
+						'slug' => $_POST['slug']
+					)
+				), 'releaseaddon')
+			);
+
+			if (is_array($result) && isset($result['body'])) {
+
+				$decoded = json_decode($result['body'], true);
+				if (empty($decoded)) {
+					echo json_encode(array(
+						'code' => 'INVALID',
+						'data' => $result['body']
+					));
+				} else {
+					echo $result['body'];
+					// Disconnect if their email address was not recognised; they probably changed it (and they're not going to be able to get any updates if it's not recognised anyway).
+					if (isset($decoded['code']) && ('OK' == $decoded['code'] || ('BADAUTH' == $decoded['code'] && isset($decoded['data']) && 'invaliduser' === $decoded['data']))) {
+						$option = $this->get_option($this->option_name);
+						if (!is_array($option)) $option = array();
+						unset($option['email']);
+						$this->update_option($this->option_name, $option);
+					}
+				}
+
+			} elseif (is_wp_error($result)) {
+				echo json_encode(array(
+					'code' => 'WP_ERROR',
+					'data' => __('Errors occurred:','udmupdater').' '.$result->get_error_message()
+				));
+			} else {
+				echo json_encode(array(
+					'code' => 'UNKNOWN_ERR',
+					'data' => __('Errors occurred:','udmupdater').' '.htmlspecialchars(serialize($result))
+				));
+			}
+		}
 	}
 }
 endif;
