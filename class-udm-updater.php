@@ -185,86 +185,8 @@ class Updraft_Manager_Updater_1_8 {
 		if (empty($_REQUEST['userid']) || empty($_REQUEST['slug']) || $this->muid != $_REQUEST['userid'] || $_REQUEST['slug'] != $this->slug) return;
 
 		if ('connect' == $_REQUEST['subaction'] && current_user_can('update_plugins')) {
-
-			$options = $this->get_option($this->option_name);
-
-			$result = wp_remote_post($this->url.'&udm_action=claimaddon&slug='.urlencode($this->slug).'&e='.urlencode($_POST['email']),
-				apply_filters('udmupdater_wp_api_options', array(
-					'timeout' => 10,
-					'body' => array(
-						'e' => $_POST['email'],
-						'p' => base64_encode($_POST['password']),
-						'sid' => $this->site_id(),
-						'sn' => base64_encode(get_bloginfo('name')),
-						'su' => base64_encode(home_url()),
-						'slug' => $this->slug,
-						'si2' => json_encode($this->get_site_info())
-					)
-				), 'claimaddon')
-			);
-
-			if (is_array($result) && isset($result['body'])) {
-
-				$decoded = json_decode($result['body']);
-				
-				if (empty($decoded)) {
-					echo json_encode(array(
-						'code' => 'INVALID',
-						'data' => $result['body']
-					));
-				} else {
-					echo $result['body'];
-					
-					// Save the new settings first, so that they can then possibly be used
-					if (isset($decoded->code) && 'OK' == $decoded->code) {
-						$option = $this->get_option($this->option_name);
-						if (!is_array($option)) $option = array();
-						$option['email'] = $_POST['email'];
-						$this->update_option($this->option_name, $option);
-					}
-					
-					if (isset($decoded->data) && isset($decoded->data->plugin_info)) {
-						$plugin_info = $decoded->data->plugin_info;
-						
-						$this->get_puc_updates_checker();
-						
-						// e.g. Puc_v4p6_Plugin_UpdateChecker
-						$checker_class = get_class($this->plug_updatechecker);
-						
-						// Hopefully take off the 'Checker'. The setUpdate() call below wants a compatible version.
-						$plugin_update_class = substr($checker_class, 0, strlen($checker_class)-7);
-						
-						if (class_exists($plugin_update_class) && is_callable(array($plugin_update_class, 'fromObject')) && !empty($this->plug_updatechecker)) {
-
-							// $plugin_update_class::fromObject() is invalid syntax on PHP 5.2
-							$plugin_update = call_user_func(array($plugin_update_class, 'fromObject'), $plugin_info);
-							
-							$update_checker = $this->plug_updatechecker;
-							
-							$installed_version = $update_checker->getInstalledVersion();
-
-							if (null !== $installed_version) {
-								$state = $update_checker->getUpdateState();
-								$state->setLastCheckToNow()->setCheckedVersion($installed_version);
-								$state->setUpdate($plugin_update);
-								$state->save();
-							}
-							
-						}
-
-					}
-					
-				}
-
-			} elseif (is_wp_error($result)) {
-				echo __('Errors occurred:','udmupdater').'<br>';
-				show_message($result);
-			} else {
-				echo __('Errors occurred:','udmupdater').' '.htmlspecialchars(serialize($result));
-			}
-
+			$this->connect();
 			die;
-
 		} elseif ('disconnect' == $_REQUEST['subaction'] && current_user_can('update_plugins')) {
 			$this->disconnect();
 			die();
@@ -997,6 +919,120 @@ class Updraft_Manager_Updater_1_8 {
 					'data' => __('Errors occurred:','udmupdater').' '.htmlspecialchars(serialize($result))
 				));
 			}
+		}
+	}
+
+	/**
+	 * Connect to the updates server
+	 */
+	private function connect() {
+		$options = $this->get_option($this->option_name);
+
+		$result = wp_remote_post($this->url.'&udm_action=claimaddon&slug='.urlencode($this->slug).'&e='.urlencode($_POST['email']),
+			apply_filters('udmupdater_wp_api_options', array(
+				'timeout' => 10,
+				'body' => array(
+					'e' => $_POST['email'],
+					'p' => base64_encode($_POST['password']),
+					'sid' => $this->site_id(),
+					'sn' => base64_encode(get_bloginfo('name')),
+					'su' => base64_encode(home_url()),
+					'slug' => $this->slug,
+					'si2' => json_encode($this->get_site_info())
+				)
+			), 'claimaddon')
+		);
+
+		if (is_array($result) && isset($result['body'])) {
+
+			$decoded = json_decode($result['body'], true);
+			
+			if (empty($decoded)) {
+				echo json_encode(array(
+					'code' => 'INVALID',
+					'data' => $result['body']
+				));
+			} else {
+				// Save the new settings first, so that they can then possibly be used
+				if (isset($decoded['code']) && 'OK' == $decoded['code']) {
+					$option = $this->get_option($this->option_name);
+					if (!is_array($option)) $option = array();
+					$option['email'] = $_POST['email'];
+					$this->update_option($this->option_name, $option);
+					if ((isset($decoded['data']) && isset($decoded['data']['plugin_info']) && isset($decoded['data']['plugin_info']['x-spm-duplicate-of'])) || (isset($option['duplicate_site_is_connected']) && $option['duplicate_site_is_connected'])) {
+						$option['duplicate_site_is_connected'] = true;
+						$decoded['duplicate_site_is_connected'] = true;
+						$this->update_option($this->option_name, $option);
+						ob_start();
+						$this->disconnect();
+						$connection_result = ob_get_clean();
+						$decoded = json_decode($connection_result, true);
+						if (!is_array($decoded)) $decoded = array();
+						if (isset($decoded['code']) && 'OK' === $decoded['code']) {
+							delete_site_option('udmanager_updater_sid');
+							$option['duplicate_site_is_connected'] = false;
+							$option['was_previously_sharing_licence'] = true;
+							$this->update_option($this->option_name, $option);
+							$this->connect();
+							exit;
+						} else {
+							unset($option['email']); // though the disconnect() method will unset this, it'd be good if we also unset this just in case the disconnect() method fails and returns an unrecognised code
+						}
+					} else {
+						if (isset($option['was_previously_sharing_licence'])) {
+							$decoded['was_previously_sharing_licence'] = $option['was_previously_sharing_licence'];
+							unset($option['was_previously_sharing_licence']);
+						}
+						if (isset($option['duplicate_site_is_connected'])) unset($option['duplicate_site_is_connected']);
+					}
+					$this->update_option($this->option_name, $option);
+					$result['body'] = json_encode($decoded);
+				}
+
+				echo $result['body'];
+				
+				if (isset($decoded['data']) && isset($decoded['data']['plugin_info'])) {
+					$plugin_info = $decoded['data']['plugin_info'];
+					
+					$this->get_puc_updates_checker();
+					
+					// e.g. Puc_v4p6_Plugin_UpdateChecker
+					$checker_class = get_class($this->plug_updatechecker);
+					
+					// Hopefully take off the 'Checker'. The setUpdate() call below wants a compatible version.
+					$plugin_update_class = substr($checker_class, 0, strlen($checker_class)-7);
+					
+					if (class_exists($plugin_update_class) && is_callable(array($plugin_update_class, 'fromObject')) && !empty($this->plug_updatechecker)) {
+
+						// $plugin_update_class::fromObject() is invalid syntax on PHP 5.2
+						$plugin_update = call_user_func(array($plugin_update_class, 'fromObject'), $plugin_info);
+						
+						$update_checker = $this->plug_updatechecker;
+						
+						$installed_version = $update_checker->getInstalledVersion();
+
+						if (null !== $installed_version) {
+							$state = $update_checker->getUpdateState();
+							$state->setLastCheckToNow()->setCheckedVersion($installed_version);
+							$state->setUpdate($plugin_update);
+							$state->save();
+						}
+						
+					}
+
+				}
+				
+			}
+		} elseif (is_wp_error($result)) {
+			echo json_encode(array(
+				'code' => 'WP_ERROR',
+				'data' => __('Errors occurred:','udmupdater').' '.$result->get_error_message()
+			));
+		} else {
+			echo json_encode(array(
+				'code' => 'UNKNOWN_ERR',
+				'data' => __('Errors occurred:','udmupdater').' '.htmlspecialchars(serialize($result))
+			));
 		}
 	}
 }
