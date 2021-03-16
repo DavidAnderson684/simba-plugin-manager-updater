@@ -70,7 +70,7 @@ class Updraft_Manager_Updater_1_8 {
 		add_filter('site_transient_update_plugins', array($this, 'site_transient_update_plugins'), 9);
 
 		$this->udmupdaterl10n = array(
-			'duplicate_site_id' => esc_js(__('This site was previously sharing a single licence also used by another WordPress install with a different URL (which most likely originates from one of the sites being created by duplicating the other) - this has resulted in the licence being disconnected from this site', 'udmupdater'))
+			'duplicate_site_id' => esc_js(__('This site was previously using a licence also used by another WordPress install with a different URL (which most likely originates from one of the sites being created by duplicating the other) - this has resulted in the licence being disconnected from this site', 'udmupdater'))
 		);
 
 		// Expiry notices
