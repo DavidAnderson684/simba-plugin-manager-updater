@@ -117,7 +117,7 @@ class Updraft_Manager_Updater_1_8 {
 		if (defined('DOING_AJAX') && DOING_AJAX || 'plugins.php' !== $pagenow) return;
 
 		$udm_options = $this->get_option($this->option_name);
-		$site_url = parse_url(site_url());
+		$site_url = parse_url(network_site_url());
 		$site_host_path = isset($site_url['host']) ? $site_url['host'] : '';
 		$site_host_path .= isset($site_url['path']) ? $site_url['path'] : '';
 		/**
@@ -738,7 +738,7 @@ class Updraft_Manager_Updater_1_8 {
 
 		$args['udm_action'] = 'updateinfo';
 		$args['sid'] = $this->site_id();
-		$args['su'] = urlencode(base64_encode(home_url()));
+		$args['su'] = urlencode(base64_encode(network_site_url()));
 		$args['sn'] = urlencode(base64_encode(get_bloginfo('name')));
 		$args['slug'] = urlencode($this->slug);
 		$args['e'] = urlencode($email);
@@ -844,7 +844,7 @@ class Updraft_Manager_Updater_1_8 {
 		$use_slug = 'updater';
 		$sid = get_site_option('udmanager_'.$use_slug.'_sid');
 		if (!is_string($sid)) {
-			$sid = md5(rand().time().home_url());
+			$sid = md5(rand().time().network_site_url());
 			update_site_option('udmanager_'.$use_slug.'_sid', $sid);
 		}
 		return $sid;
@@ -985,7 +985,7 @@ class Updraft_Manager_Updater_1_8 {
 					'p' => base64_encode($_POST['password']),
 					'sid' => $this->site_id(),
 					'sn' => base64_encode(get_bloginfo('name')),
-					'su' => base64_encode(home_url()),
+					'su' => base64_encode(network_site_url()),
 					'slug' => $this->slug,
 					'si2' => json_encode($this->get_site_info())
 				)
