@@ -739,6 +739,7 @@ class Updraft_Manager_Updater_1_8 {
 		$args['udm_action'] = 'updateinfo';
 		$args['sid'] = $this->site_id();
 		$args['su'] = urlencode(base64_encode(network_site_url()));
+		$args['home_url'] = urlencode(base64_encode(home_url()));
 		$args['sn'] = urlencode(base64_encode(get_bloginfo('name')));
 		$args['slug'] = urlencode($this->slug);
 		$args['e'] = urlencode($email);
@@ -986,6 +987,7 @@ class Updraft_Manager_Updater_1_8 {
 					'sid' => $this->site_id(),
 					'sn' => base64_encode(get_bloginfo('name')),
 					'su' => base64_encode(network_site_url()),
+					'home_url' => base64_encode(home_url()),
 					'slug' => $this->slug,
 					'si2' => json_encode($this->get_site_info())
 				)
