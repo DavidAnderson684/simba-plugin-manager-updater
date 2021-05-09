@@ -110,8 +110,6 @@ class Updraft_Manager_Updater_1_8 {
 	 */
 	public function disconnect_cloned_site() {
 
-		global $pagenow; 
-
 		$udm_options = $this->get_option($this->option_name);
 		$site_url = parse_url(network_site_url());
 		$site_host_path = isset($site_url['host']) ? $site_url['host'] : '';
