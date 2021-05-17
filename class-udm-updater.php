@@ -123,8 +123,8 @@ class Updraft_Manager_Updater_1_8 {
 			unset($udm_options['email']);
 			$udm_options['site_host_path'] = $site_host_path;
 			$this->plug_updatechecker->resetUpdateState();
+			$this->update_option($this->option_name, $udm_options);
 		}
-		$this->update_option($this->option_name, $udm_options);
 	}
 
 	/**
