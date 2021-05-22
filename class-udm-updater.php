@@ -70,7 +70,7 @@ class Updraft_Manager_Updater_1_8 {
 		add_filter('site_transient_update_plugins', array($this, 'site_transient_update_plugins'), 9);
 
 		$this->udmupdaterl10n = array(
-			'duplicate_site_id' => esc_js(__('This site was previously using a licence also used by another WordPress install with a different URL (which most likely originates from one of the sites being created by duplicating the other) - this has resulted in the licence being disconnected from this site', 'udmupdater'))
+			'duplicate_site_id' => __('This site was previously using a licence also used by another WordPress install with a different URL (which most likely originates from one of the sites being created by duplicating the other) - this has resulted in the licence being disconnected from this site', 'udmupdater')
 		);
 
 		// Expiry notices
@@ -662,7 +662,7 @@ class Updraft_Manager_Updater_1_8 {
 				<button class="button button-primary udmupdater-disconnect"><?php _e('Disconnect', 'udmupdater');?></button>
 			</div>
 			<?php } else { ?>
-			<div class="udmupdater_duplicate_site_warning" style="<?php if (!$duplicate_site) echo 'display: none'; ?>"><?php if ($duplicate_site) echo $this->udmupdaterl10n['duplicate_site_id']; ?></div>
+			<div class="udmupdater_duplicate_site_warning" style="<?php if (!$duplicate_site) echo 'display: none'; ?>"><?php if ($duplicate_site) echo esc_js($this->udmupdaterl10n['duplicate_site_id']); ?></div>
 			<div style="float: left; margin-right: 14px; margin-top: 4px;">
 				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('Please enter your customer login to access updates for %s', 'udmupdater'), $plugin_label), $this->get_plugin_data()); ?></em>: 
 			</div>
