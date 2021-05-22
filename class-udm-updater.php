@@ -122,7 +122,7 @@ class Updraft_Manager_Updater_1_8 {
 			// Since we're not disconnecting the plugin from the updates server, doing this on both cloned and non-cloned sites won't make the entitlement inactive. However, the user will be able to connect again without getting any issue even the updates server finds the plugin is still connected (active)
 			unset($udm_options['email']);
 			$udm_options['site_host_path'] = $site_host_path;
-			$this->plug_updatechecker->resetUpdateState();
+			if ($this->plug_updatechecker) $this->plug_updatechecker->resetUpdateState();
 			$this->update_option($this->option_name, $udm_options);
 		}
 	}
