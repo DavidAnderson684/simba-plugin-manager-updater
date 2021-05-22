@@ -390,7 +390,7 @@ class Updraft_Manager_Updater_1_8 {
 	 */
 	public function load_plugins_php() {
 		if (!current_user_can('update_plugins')) return;
-		$this->disconnect_cloned_site();
+		$this->potentially_disconnect_cloned_site();
 		$this->add_admin_notice_if_not_connected();
 	}
 
