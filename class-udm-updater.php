@@ -106,9 +106,9 @@ class Updraft_Manager_Updater_1_8 {
 	}
 
 	/**
-	 * Disconnect a cloned site by unsetting the `email` option and resetting PUC update cache and at the same time adding `site_host_path` as a plugin option for a cloned site checking purpose in future
+	 * Potentially isconnect a cloned site by unsetting the 'email' option and resetting PUC update cache and at the same time adding 'site_host_path' as a plugin option for a cloned site checking purpose in future
 	 */
-	public function disconnect_cloned_site() {
+	public function potentially_disconnect_cloned_site() {
 
 		$udm_options = $this->get_option($this->option_name);
 		$site_url = parse_url(network_site_url());
@@ -381,7 +381,7 @@ class Updraft_Manager_Updater_1_8 {
 	 */
 	public function core_upgrade_preamble() {
 		if (!current_user_can('update_plugins')) return;
-		$this->disconnect_cloned_site();
+		$this->potentially_disconnect_cloned_site();
 		if (!$this->is_connected()) $this->admin_notice_not_connected();
 	}
 
