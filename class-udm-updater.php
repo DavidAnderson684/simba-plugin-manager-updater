@@ -106,7 +106,7 @@ class Updraft_Manager_Updater_1_8 {
 	}
 
 	/**
-	 * Potentially isconnect a cloned site by unsetting the 'email' option and resetting PUC update cache and at the same time adding 'site_host_path' as a plugin option for a cloned site checking purpose in future
+	 * Potentially disconnect a cloned site by unsetting the 'email' option and resetting PUC update cache and at the same time adding 'site_host_path' as a plugin option for a cloned site checking purpose in future
 	 */
 	public function potentially_disconnect_cloned_site() {
 
