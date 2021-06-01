@@ -111,19 +111,20 @@ class Updraft_Manager_Updater_1_8 {
 	public function potentially_disconnect_cloned_site() {
 
 		$udm_options = $this->get_option($this->option_name);
+		$old_site_host_path = isset($udm_options['site_host_path']) ? $udm_options['site_host_path'] : '';
 		$site_url = parse_url(network_site_url());
 		$site_host_path = isset($site_url['host']) ? $site_url['host'] : '';
 		$site_host_path .= isset($site_url['path']) ? $site_url['path'] : '';
-		/**
-		 * If it's a cloned site, other plugins that use the same site ID may have still connected. Just unset the email and clear the PUC update cache so that when the users reconnect they get the warning message about the duplicate site ID issue
-		 * any releases of UDM that doesn't have the `site_host_path` option must first have their `email` option unset and PUC update cache reset, including any plugin that was cloned from a site where the plugin is connected but it has a different URL site compared to the site_host_path option
-		 */
-		if (empty($udm_options['site_host_path']) || (!empty($udm_options['email']) && strtolower($udm_options['site_host_path']) !== strtolower($site_host_path))) {
-			// Since we're not disconnecting the plugin from the updates server, doing this on both cloned and non-cloned sites won't make the entitlement inactive. However, the user will be able to connect again without getting any issue even the updates server finds the plugin is still connected (active)
-			unset($udm_options['email']);
+		// if no site_host_path option is set in the database, then add a new one as it will be used for a cloned site checking
+		if (empty($udm_options['site_host_path'])) {
 			$udm_options['site_host_path'] = $site_host_path;
-			if ($this->plug_updatechecker) $this->plug_updatechecker->resetUpdateState();
 			$this->update_option($this->option_name, $udm_options);
+		}
+		// If it's a cloned site, other plugins that use the same site ID may have still connected. Just unset the email and clear the PUC update cache so that when the users reconnect they get the warning message about the duplicate site ID issue
+		if (!empty($udm_options['email']) && strtolower($old_site_host_path) !== strtolower($site_host_path)) {
+			// Since we're not disconnecting the plugin from the updates server, doing this on cloned sites won't make the entitlement inactive, the user will be able to connect again without getting any issue even the updates server finds the plugin is still connected (active)
+			unset($udm_options['email']);
+			if ($this->plug_updatechecker) $this->plug_updatechecker->resetUpdateState();
 		}
 	}
 
