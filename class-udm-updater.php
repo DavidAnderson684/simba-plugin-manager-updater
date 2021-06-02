@@ -106,25 +106,41 @@ class Updraft_Manager_Updater_1_8 {
 	}
 
 	/**
-	 * Potentially disconnect a cloned site by unsetting the 'email' option and resetting PUC update cache and at the same time adding 'site_host_path' as a plugin option for a cloned site checking purpose in future
+	 * Generate 'site_host_path' option containing the current site URL, which is used for a cloned site checking purpose in future
+	 *
+	 * @return Boolean True if site_host_path option existed and has just been updated due to having different site address compared with the currently running site, false if either site_host_path didn't exist and has just been added to the database or site_host_path exists and it has the same site address with the currently running site 
 	 */
-	public function potentially_disconnect_cloned_site() {
-
+	protected function update_site_host_option() {
 		$udm_options = $this->get_option($this->option_name);
-		$old_site_host_path = isset($udm_options['site_host_path']) ? $udm_options['site_host_path'] : '';
 		$site_url = parse_url(network_site_url());
 		$site_host_path = isset($site_url['host']) ? $site_url['host'] : '';
 		$site_host_path .= isset($site_url['path']) ? $site_url['path'] : '';
+		$old_site_host_path = isset($udm_options['site_host_path']) ? $udm_options['site_host_path'] : $site_host_path;
 		// if no site_host_path option is set in the database, then add a new one as it will be used for a cloned site checking
 		if (empty($udm_options['site_host_path'])) {
 			$udm_options['site_host_path'] = $site_host_path;
 			$this->update_option($this->option_name, $udm_options);
+		} elseif (strtolower($old_site_host_path) !== strtolower($site_host_path)) {
+			$udm_options['site_host_path'] = $site_host_path;
+			$this->update_option($this->option_name, $udm_options);
+			return true;
 		}
+		return false;
+	}
+
+	/**
+	 * Potentially disconnect a cloned site by unsetting the 'email' option and resetting PUC update cache
+	 */
+	protected function potentially_disconnect_cloned_site() {
 		// If it's a cloned site, other plugins that use the same site ID may have still connected. Just unset the email and clear the PUC update cache so that when the users reconnect they get the warning message about the duplicate site ID issue
-		if (!empty($udm_options['email']) && strtolower($old_site_host_path) !== strtolower($site_host_path)) {
-			// Since we're not disconnecting the plugin from the updates server, doing this on cloned sites won't make the entitlement inactive, the user will be able to connect again without getting any issue even the updates server finds the plugin is still connected (active)
-			unset($udm_options['email']);
-			if ($this->plug_updatechecker) $this->plug_updatechecker->resetUpdateState();
+		if ($this->update_site_host_option()) {
+			$udm_options = $this->get_option($this->option_name);
+			if (!empty($udm_options['email'])) {
+				// Since we're not disconnecting the plugin from the updates server, doing this on cloned sites won't make the entitlement inactive, the user will be able to connect again without getting any issue even the updates server finds the plugin is still connected (active)
+				unset($udm_options['email']);
+				if ($this->plug_updatechecker) $this->plug_updatechecker->resetUpdateState();
+				$this->update_option($this->option_name, $udm_options);
+			}
 		}
 	}
 
@@ -215,6 +231,7 @@ class Updraft_Manager_Updater_1_8 {
 		// Make sure this request is meant for us
 		if (empty($_REQUEST['userid']) || empty($_REQUEST['slug']) || $this->muid != $_REQUEST['userid'] || $_REQUEST['slug'] != $this->slug) return;
 
+		$this->update_site_host_option();
 		if ('connect' == $_REQUEST['subaction'] && current_user_can('update_plugins')) {
 			$this->connect();
 			die;
