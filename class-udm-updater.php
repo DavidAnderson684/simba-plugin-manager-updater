@@ -94,6 +94,7 @@ class Updraft_Manager_Updater_1_8 {
 			$this->replace_auto_update_option();
 		}
 
+		include(ABSPATH.WPINC.'/version.php');
 		if (version_compare($wp_version, '5.5', '<')) {
 			add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 20, 2);
 		}
