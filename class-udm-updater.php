@@ -32,6 +32,8 @@ class Updraft_Manager_Updater_1_8 {
 	private $admin_notices = array();
 	
 	public $require_login = true;
+	
+	private $plugin_data = null;
 
 	/**
 	 * Constructor
@@ -804,18 +806,18 @@ class Updraft_Manager_Updater_1_8 {
 	/**
 	 * Get the plugin's data.
 	 *
-	 * @param string $key - The key of the data required. Null by default (Null returns the whole plugin_data object).
+	 * @param string $key - The key of the data required. Empty by default (the empty string returns the whole plugin_data object).
+	 *
 	 * @return mixed
 	 */
 	protected function get_plugin_data($key = '') {
-		static $plugin_data = null;
-		if (empty($plugin_data)) {
+		if (null === $this->plugin_data) {
 			if (!function_exists('get_plugin_data')) require_once(ABSPATH.'wp-admin/includes/plugin.php');
-			$plugin_data = get_plugin_data($this->plugin_file);
+			$this->plugin_data = get_plugin_data($this->plugin_file);
 		}
-		if (!$key) return $plugin_data;
-		if (isset($plugin_data[$key])) {
-			return $plugin_data[$key];
+		if ('' === $key) return $this->plugin_data;
+		if (isset($this->plugin_data[$key])) {
+			return $this->plugin_data[$key];
 		}
 		return false;
 	}
