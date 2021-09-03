@@ -135,7 +135,7 @@ class Updraft_Manager_Updater_1_8 {
 		// If it's a cloned site, other plugins that use the same site ID may have still connected. Just unset the email and clear the PUC update cache so that when the users reconnect they get the warning message about the duplicate site ID issue
 		if ($this->update_site_host_option()) {
 			$udm_options = $this->get_option($this->option_name);
-			if (!empty($udm_options['email'])) {
+			if (isset($udm_options['email'])) {
 				// Since we're not disconnecting the plugin from the updates server, doing this on cloned sites won't make the entitlement inactive, the user will be able to connect again without getting any issue even the updates server finds the plugin is still connected (active)
 				unset($udm_options['email']);
 				if ($this->plug_updatechecker) $this->plug_updatechecker->resetUpdateState();
