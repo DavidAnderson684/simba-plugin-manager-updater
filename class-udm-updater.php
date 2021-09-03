@@ -115,12 +115,11 @@ class Updraft_Manager_Updater_1_8 {
 		$site_url = parse_url(network_site_url());
 		$site_host_path = isset($site_url['host']) ? $site_url['host'] : '';
 		$site_host_path .= isset($site_url['path']) ? $site_url['path'] : '';
-		$old_site_host_path = isset($udm_options['site_host_path']) ? $udm_options['site_host_path'] : $site_host_path;
 		// if no site_host_path option is set in the database, then add a new one as it will be used for a cloned site checking
 		if (!isset($udm_options['site_host_path']) || (!is_string($udm_options['site_host_path']) && !is_numeric($udm_options['site_host_path'])) || '' === $udm_options['site_host_path']) {
 			$udm_options['site_host_path'] = $site_host_path;
 			$this->update_option($this->option_name, $udm_options);
-		} elseif (strtolower($old_site_host_path) !== strtolower($site_host_path)) {
+		} elseif (strtolower($udm_options['site_host_path']) !== strtolower($site_host_path)) {
 			$udm_options['site_host_path'] = $site_host_path;
 			$this->update_option($this->option_name, $udm_options);
 			return true;
