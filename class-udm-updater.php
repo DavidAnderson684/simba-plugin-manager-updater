@@ -108,7 +108,7 @@ class Updraft_Manager_Updater_1_8 {
 	/**
 	 * Generate 'site_host_path' option containing the current site URL, which is used for a cloned site checking purpose in future
 	 *
-	 * @return Boolean True if site_host_path option existed and has just been updated due to having different site address compared with the currently running site, false if either site_host_path didn't exist and has just been added to the database or site_host_path exists and it has the same site address with the currently running site 
+	 * @return Boolean True if site_host_path option existed and has just been updated due to having different site address compared to the currently running site, false if either site_host_path didn't exist and has just been added to the database or site_host_path exists and it has the same site address with the currently running site 
 	 */
 	protected function update_site_host_option() {
 		$udm_options = $this->get_option($this->option_name);
@@ -116,7 +116,7 @@ class Updraft_Manager_Updater_1_8 {
 		$site_host_path = isset($site_url['host']) ? $site_url['host'] : '';
 		$site_host_path .= isset($site_url['path']) ? $site_url['path'] : '';
 		// if no site_host_path option is set in the database, then add a new one as it will be used for a cloned site checking
-		if (!isset($udm_options['site_host_path']) || (!is_string($udm_options['site_host_path']) && !is_numeric($udm_options['site_host_path'])) || '' === $udm_options['site_host_path']) {
+		if (!isset($udm_options['site_host_path'])) {
 			$udm_options['site_host_path'] = $site_host_path;
 			$this->update_option($this->option_name, $udm_options);
 		} elseif (strtolower($udm_options['site_host_path']) !== strtolower($site_host_path)) {
