@@ -30,6 +30,7 @@ class Updraft_Manager_Updater_1_8 {
 	
 	private $option_name;
 	private $admin_notices = array();
+	private $udmupdaterl10n;
 	
 	public $require_login = true;
 	
@@ -68,6 +69,10 @@ class Updraft_Manager_Updater_1_8 {
 		// Prevent updates from wordpress.org showing in all circumstances. Run with lower than default priority, to allow later processes to add something.
 		add_filter('site_transient_update_plugins', array($this, 'site_transient_update_plugins'), 9);
 
+		$this->udmupdaterl10n = array(
+			'duplicate_site_id' => __('This site was previously using a licence also used by another WordPress install with a different URL (which most likely originates from one of the sites being created by duplicating the other) - this has resulted in the licence being disconnected from this site', 'udmupdater')
+		);
+
 		// Expiry notices
 		add_action(is_multisite() ? 'network_admin_menu' : 'admin_menu', array($this, 'admin_menu'));
 
@@ -97,6 +102,44 @@ class Updraft_Manager_Updater_1_8 {
 		include(ABSPATH.WPINC.'/version.php');
 		if (version_compare($wp_version, '5.5', '<')) {
 			add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 20, 2);
+		}
+	}
+
+	/**
+	 * Generate 'site_host_path' option containing the current site URL, which is used for a cloned site checking purpose in future
+	 *
+	 * @return Boolean True if site_host_path option existed and has just been updated due to having different site address compared to the currently running site, false if either site_host_path didn't exist and has just been added to the database or site_host_path exists and it has the same site address with the currently running site 
+	 */
+	protected function update_site_host_option() {
+		$udm_options = $this->get_option($this->option_name);
+		$site_url = parse_url(network_site_url());
+		$site_host_path = isset($site_url['host']) ? $site_url['host'] : '';
+		$site_host_path .= isset($site_url['path']) ? $site_url['path'] : '';
+		// if no site_host_path option is set in the database, then add a new one as it will be used for a cloned site checking
+		if (!isset($udm_options['site_host_path'])) {
+			$udm_options['site_host_path'] = $site_host_path;
+			$this->update_option($this->option_name, $udm_options);
+		} elseif (strtolower($udm_options['site_host_path']) !== strtolower($site_host_path)) {
+			$udm_options['site_host_path'] = $site_host_path;
+			$this->update_option($this->option_name, $udm_options);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Potentially disconnect a cloned site by unsetting the 'email' option and resetting PUC update cache
+	 */
+	protected function potentially_disconnect_cloned_site() {
+		// If it's a cloned site, other plugins that use the same site ID may have still connected. Just unset the email and clear the PUC update cache so that when the users reconnect they get the warning message about the duplicate site ID issue
+		if ($this->update_site_host_option()) {
+			$udm_options = $this->get_option($this->option_name);
+			if (isset($udm_options['email'])) {
+				// Since we're not disconnecting the plugin from the updates server, doing this on cloned sites won't make the entitlement inactive, the user will be able to connect again without getting any issue even the updates server finds the plugin is still connected (active)
+				unset($udm_options['email']);
+				if ($this->plug_updatechecker) $this->plug_updatechecker->resetUpdateState();
+				$this->update_option($this->option_name, $udm_options);
+			}
 		}
 	}
 
@@ -187,6 +230,7 @@ class Updraft_Manager_Updater_1_8 {
 		// Make sure this request is meant for us
 		if (empty($_REQUEST['userid']) || empty($_REQUEST['slug']) || $this->muid != $_REQUEST['userid'] || $_REQUEST['slug'] != $this->slug) return;
 
+		$this->update_site_host_option();
 		if ('connect' == $_REQUEST['subaction'] && current_user_can('update_plugins')) {
 			$this->connect();
 			die;
@@ -354,6 +398,7 @@ class Updraft_Manager_Updater_1_8 {
 	 */
 	public function core_upgrade_preamble() {
 		if (!current_user_can('update_plugins')) return;
+		$this->potentially_disconnect_cloned_site();
 		if (!$this->is_connected()) $this->admin_notice_not_connected();
 	}
 
@@ -362,6 +407,7 @@ class Updraft_Manager_Updater_1_8 {
 	 */
 	public function load_plugins_php() {
 		if (!current_user_can('update_plugins')) return;
+		$this->potentially_disconnect_cloned_site();
 		$this->add_admin_notice_if_not_connected();
 	}
 
@@ -422,6 +468,7 @@ class Updraft_Manager_Updater_1_8 {
 	public function admin_footer() {
 		?>
 		<script>
+			var udmupdaterl10n = <?php echo json_encode($this->udmupdaterl10n, JSON_PRETTY_PRINT)."\n"; ?>
 			jQuery(function($) {
 				var nonce = '<?php echo esc_js(wp_create_nonce('udmupdater-ajax-nonce')); ?>';
 				$('.udmupdater_userpassform_<?php echo esc_js($this->slug);?> .udmupdater-connect').on('click', function() {
@@ -469,11 +516,21 @@ class Updraft_Manager_Updater_1_8 {
 										console.log(resp);
 									}
 								} else if (resp.code == 'OK') {
+									if (resp.hasOwnProperty('was_previously_sharing_licence')) {
+										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').empty().text(udmupdaterl10n.duplicate_site_id);
+										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').slideDown();
+									}
 									alert('<?php echo esc_js(__('You have successfully connected for access to updates to this plugin.', 'udmupdater'));?>');
-									$('.udmupdater_box_<?php echo esc_js($this->slug);?>').parent().slideUp();
+									if (!resp.hasOwnProperty('was_previously_sharing_licence')) {
+										$('div.udmupdater_box_<?php echo esc_js($this->slug);?> div.udmupdater_duplicate_site_warning').empty();
+										$('.udmupdater_box_<?php echo esc_js($this->slug);?>').parent().slideUp();
+									}
 								} else if (resp.code == 'ERR') {
 									alert('<?php echo esc_js(__('Your login was accepted, but no available entitlement for this plugin was found.', 'udmupdater').' '.__('Has your licence expired, or have you used all your available licences elsewhere?', 'udmupdater'));?>');
 									console.log(resp);
+								} else {
+									console.log(resp);
+									alert(resp.data);
 								}
 							} else {
 								alert('<?php echo esc_js(__('The response from the remote site could not be decoded. (More information is recorded in the browser console).', 'udmupdater'));?>');
@@ -602,6 +659,7 @@ class Updraft_Manager_Updater_1_8 {
 
 		$options = $this->get_option($this->option_name);
 		$email = isset($options['email']) ? $options['email'] : '';
+		$duplicate_site = isset($options['was_previously_sharing_licence']) && false === $options['was_previously_sharing_licence'];
 
 		if (empty($this->connector_footer_added)) {
 			$this->connector_footer_added = true;
@@ -621,6 +679,7 @@ class Updraft_Manager_Updater_1_8 {
 				<button class="button button-primary udmupdater-disconnect"><?php _e('Disconnect', 'udmupdater');?></button>
 			</div>
 			<?php } else { ?>
+			<div class="udmupdater_duplicate_site_warning" style="<?php if (!$duplicate_site) echo 'display: none'; ?>"><?php if ($duplicate_site) echo esc_html($this->udmupdaterl10n['duplicate_site_id']); ?></div>
 			<div style="float: left; margin-right: 14px; margin-top: 4px;">
 				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('Please enter your customer login to access updates for %s', 'udmupdater'), $plugin_label), $this->get_plugin_data()); ?></em>: 
 			</div>
@@ -692,7 +751,8 @@ class Updraft_Manager_Updater_1_8 {
 
 		$args['udm_action'] = 'updateinfo';
 		$args['sid'] = $this->site_id();
-		$args['su'] = urlencode(base64_encode(home_url()));
+		$args['su'] = urlencode(base64_encode(network_site_url()));
+		$args['home_url'] = urlencode(base64_encode(home_url()));
 		$args['sn'] = urlencode(base64_encode(get_bloginfo('name')));
 		$args['slug'] = urlencode($this->slug);
 		$args['e'] = urlencode($email);
@@ -798,7 +858,7 @@ class Updraft_Manager_Updater_1_8 {
 		$use_slug = 'updater';
 		$sid = get_site_option('udmanager_'.$use_slug.'_sid');
 		if (!is_string($sid)) {
-			$sid = md5(rand().time().home_url());
+			$sid = md5(rand().time().network_site_url());
 			update_site_option('udmanager_'.$use_slug.'_sid', $sid);
 		}
 		return $sid;
@@ -939,7 +999,8 @@ class Updraft_Manager_Updater_1_8 {
 					'p' => base64_encode($_POST['password']),
 					'sid' => $this->site_id(),
 					'sn' => base64_encode(get_bloginfo('name')),
-					'su' => base64_encode(home_url()),
+					'su' => base64_encode(network_site_url()),
+					'home_url' => base64_encode(home_url()),
 					'slug' => $this->slug,
 					'si2' => json_encode($this->get_site_info())
 				)
