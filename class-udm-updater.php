@@ -969,6 +969,7 @@ class Updraft_Manager_Updater_1_8 {
 						if (!is_array($option)) $option = array();
 						unset($option['email']);
 						$this->update_option($this->option_name, $option);
+						do_action('udmupdater_subscription_activated' );
 					}
 				}
 

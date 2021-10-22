@@ -59,3 +59,11 @@ updater.php is a very short file. Find this line ...
 3. Change the plugin path to be the path (relative to the WP plugin directory, by default wp-content/plugins) to your plugin's main file.
 
 That's it! A fourth parameter is also available, an options array. Available options (specified as key/value pairs) include: debug (boolean), require_login (boolean), auto_backoff (boolean), interval_hours (integer).
+
+## Hooks
+
+You have a number of hooks that allow you to add functionality at specific times of license activation or deactivation.
+
+`udmupdater_subscription_activated`
+
+This hook will be called at the moment of the correct activation of the license
