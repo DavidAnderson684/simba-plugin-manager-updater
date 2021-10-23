@@ -968,8 +968,7 @@ class Updraft_Manager_Updater_1_8 {
 						$option = $this->get_option($this->option_name);
 						if (!is_array($option)) $option = array();
 						unset($option['email']);
-						$this->update_option($this->option_name, $option);						
-						do_action('udmupdater_subscription_activated' );
+						$this->update_option($this->option_name, $option);
 					}
 				}
 
@@ -1025,6 +1024,7 @@ class Updraft_Manager_Updater_1_8 {
 					if (!is_array($option)) $option = array();
 					$option['email'] = $_POST['email'];
 					$this->update_option($this->option_name, $option);
+					do_action('udmupdater_subscription_activated');
 					if ((isset($decoded['data']) && isset($decoded['data']['plugin_info']) && isset($decoded['data']['plugin_info']['x-spm-duplicate-of'])) || (isset($option['duplicate_site_is_connected']) && $option['duplicate_site_is_connected'])) {
 						$option['duplicate_site_is_connected'] = true;
 						$decoded['duplicate_site_is_connected'] = true;
