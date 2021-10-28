@@ -992,11 +992,13 @@ class Updraft_Manager_Updater_1_8 {
 	private function connect() {
 		$options = $this->get_option($this->option_name);
 
-		$result = wp_remote_post($this->url.'&udm_action=claimaddon&slug='.urlencode($this->slug).'&e='.urlencode($_POST['email']),
+		$email = stripslashes($_POST['email']);
+		
+		$result = wp_remote_post($this->url.'&udm_action=claimaddon&slug='.urlencode($this->slug).'&e='.urlencode($email),
 			apply_filters('udmupdater_wp_api_options', array(
 				'timeout' => 10,
 				'body' => array(
-					'e' => $_POST['email'],
+					'e' => $email,
 					'p' => base64_encode($_POST['password']),
 					'sid' => $this->site_id(),
 					'sn' => base64_encode(get_bloginfo('name')),
@@ -1022,7 +1024,7 @@ class Updraft_Manager_Updater_1_8 {
 				if (isset($decoded['code']) && 'OK' == $decoded['code']) {
 					$option = $this->get_option($this->option_name);
 					if (!is_array($option)) $option = array();
-					$option['email'] = $_POST['email'];
+					$option['email'] = $email;
 					$this->update_option($this->option_name, $option);
 					if ((isset($decoded['data']) && isset($decoded['data']['plugin_info']) && isset($decoded['data']['plugin_info']['x-spm-duplicate-of'])) || (isset($option['duplicate_site_is_connected']) && $option['duplicate_site_is_connected'])) {
 						$option['duplicate_site_is_connected'] = true;
@@ -1053,6 +1055,8 @@ class Updraft_Manager_Updater_1_8 {
 					$this->update_option($this->option_name, $option);
 					$result['body'] = json_encode($decoded);
 				}
+				
+				do_action('udmupdater_connect_result', $decoded, $this, $email);
 
 				echo $result['body'];
 				
