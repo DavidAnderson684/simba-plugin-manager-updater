@@ -1074,7 +1074,9 @@ class Updraft_Manager_Updater_1_8 {
 					if (class_exists($plugin_update_class) && is_callable(array($plugin_update_class, 'fromObject')) && !empty($this->plug_updatechecker)) {
 
 						// $plugin_update_class::fromObject() is invalid syntax on PHP 5.2
-						$plugin_update = call_user_func(array($plugin_update_class, 'fromObject'), $plugin_info);
+						// Puc_v4pxx_Plugin_Update::fromObject() method (according to its docblock) accepts only object type for its parameter, passing an array produces a PHP fatal error on PHP 8.x, but still works on other PHP versions prior to 8.0
+						// we now that $plugin_info will always be an array and will never be a string, so no need to add a check for that we can just cast it into an object
+						$plugin_update = call_user_func(array($plugin_update_class, 'fromObject'), (object) $plugin_info);
 						
 						$update_checker = $this->plug_updatechecker;
 						
