@@ -103,6 +103,36 @@ class Updraft_Manager_Updater_1_8 {
 		if (version_compare($wp_version, '5.5', '<')) {
 			add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 20, 2);
 		}
+
+		add_action('wp_loaded', array($this, 'maybe_force_checking_for_updates'));
+	}
+
+	/**
+	 * Whether to manually force checking for updates by inspecting a specified slug submitted as a query argument (force_udm_check) and build restriction where plugin can only be force checked 2 times a day to prevent abuse
+	 *
+	 * @return Void
+	 */
+	public function maybe_force_checking_for_updates() {
+		if (!isset($_REQUEST['force_udm_check']) || '' === $_REQUEST['force_udm_check']) return;
+		$slug = sanitize_text_field($_REQUEST['force_udm_check']);
+		if ($this->slug !== $slug) return;
+		$restriction = get_transient('udm_manual_check_for_updates_restriction');
+		if (false === $restriction) $restriction = array();
+		$wp_current_day = strtotime(get_date_from_gmt(gmdate('Y-m-d', time()), 'Y-m-d'));
+		if (!is_array($restriction) || !isset($restriction[$slug]) || !isset($restriction[$slug]['current_day']) || !is_numeric($restriction[$slug]['current_day']) || !isset($restriction[$slug]['count']) || !is_numeric($restriction[$slug]['count']) || $restriction[$slug]['current_day'] > $wp_current_day || $wp_current_day - $restriction[$slug]['current_day'] > 60*60*24) {
+			// If the transient doesn't exist, doesn't have a value, has expired, has invalid data type, one of the required variables doesn't exist, or current day doesn't match with what's in the data then set a new one
+			$restriction[$slug] = array(
+				'current_day' => $wp_current_day,
+				'count' => 1
+			);
+		} elseif ($wp_current_day == $restriction[$slug]['current_day'] && (int) $restriction[$slug]['count'] < 2) {
+			$restriction[$slug]['count'] = 2;
+		} else {
+			exit;
+		}
+		set_transient('udm_manual_check_for_updates_restriction', $restriction); // transients are autoloaded if no expiration time is specified (i.e. 0), and only if they are created using set_transient not set_site_transient
+		$this->plug_updatechecker->checkForUpdates();
+		exit;
 	}
 
 	/**
