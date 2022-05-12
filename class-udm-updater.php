@@ -103,6 +103,46 @@ class Updraft_Manager_Updater_1_8 {
 		if (version_compare($wp_version, '5.5', '<')) {
 			add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 20, 2);
 		}
+
+		add_action('wp_loaded', array($this, 'maybe_force_checking_for_updates'));
+	}
+
+	/**
+	 * Whether to manually force checking for updates by inspecting a specified slug submitted as a query argument (force_udm_check) and build restriction where plugin can only be force checked 2 times a day to prevent abuse
+	 *
+	 * @return Void
+	 */
+	public function maybe_force_checking_for_updates() {
+		if (!isset($_REQUEST['force_udm_check']) || '' === $_REQUEST['force_udm_check']) return;
+		$slug = sanitize_text_field($_REQUEST['force_udm_check']);
+		if ($this->slug !== $slug) return;
+		header('Content-type: application/json');
+		$restriction = $this->get_option('udm_manual_check_for_updates_restriction');
+		if (!is_array($restriction)) $restriction = array();
+		$time_now = time();
+		$wp_current_day = $time_now - ($time_now % 86400);
+		if (!isset($restriction[$slug]) || !isset($restriction[$slug]['current_day']) || !is_numeric($restriction[$slug]['current_day']) || !isset($restriction[$slug]['count']) || !is_numeric($restriction[$slug]['count']) || $restriction[$slug]['current_day'] > $wp_current_day || $wp_current_day - $restriction[$slug]['current_day'] > 60*60*24) {
+			// If the restriction option doesn't exist, doesn't have a value, has expired, has invalid data type, one of the required variables doesn't exist, or current day doesn't match with what's in the data then set a new one
+			$restriction[$slug] = array(
+				'current_day' => $wp_current_day,
+				'count' => 1
+			);
+		} elseif ($wp_current_day == $restriction[$slug]['current_day'] && (int) $restriction[$slug]['count'] < 2) {
+			$restriction[$slug]['count'] = 2;
+		} else {
+			echo json_encode(array(
+				'code' => 'force_checking_limit_exceeded',
+				'data' => $restriction[$slug]['count'],
+			));
+			exit;
+		}
+		$this->update_option('udm_manual_check_for_updates_restriction', $restriction);
+		$this->plug_updatechecker->checkForUpdates();
+		echo json_encode(array(
+			'code' => 'success',
+			'data' => $restriction[$slug]['count'],
+		));
+		exit;
 	}
 
 	/**
