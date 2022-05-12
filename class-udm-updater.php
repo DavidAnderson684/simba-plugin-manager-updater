@@ -119,7 +119,8 @@ class Updraft_Manager_Updater_1_8 {
 		header('Content-type: application/json');
 		$restriction = $this->get_option('udm_manual_check_for_updates_restriction');
 		if (!is_array($restriction)) $restriction = array();
-		$wp_current_day = strtotime(get_date_from_gmt(gmdate('Y-m-d', time()), 'Y-m-d'));
+		$time_now = time();
+		$wp_current_day = $time_now - ($time_now % 86400);
 		if (!isset($restriction[$slug]) || !isset($restriction[$slug]['current_day']) || !is_numeric($restriction[$slug]['current_day']) || !isset($restriction[$slug]['count']) || !is_numeric($restriction[$slug]['count']) || $restriction[$slug]['current_day'] > $wp_current_day || $wp_current_day - $restriction[$slug]['current_day'] > 60*60*24) {
 			// If the restriction option doesn't exist, doesn't have a value, has expired, has invalid data type, one of the required variables doesn't exist, or current day doesn't match with what's in the data then set a new one
 			$restriction[$slug] = array(
