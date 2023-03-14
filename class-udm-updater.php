@@ -36,6 +36,10 @@ class Updraft_Manager_Updater_1_8 {
 	
 	private $plugin_data = null;
 
+    private $ourdir;
+
+    private $plugin_file;
+
 	/**
 	 * Constructor
 	 *
