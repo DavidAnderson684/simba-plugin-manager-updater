@@ -1,0 +1,273 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: Simba Plugin Manager Updater\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-04-26 13:38+0000\n"
+"PO-Revision-Date: 2023-05-06 09:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: Français\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.6.4; wp-6.2"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:439
+#, php-format
+msgid "Access to plugin updates (%s)"
+msgstr "Accéder aux mises à jour de l'extension (%s)"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:698
+msgid ""
+"Automatically update as soon as an update becomes available (N.B. other "
+"plugins can over-ride this setting)."
+msgstr ""
+"Mettre à jour automatiquement aussitôt qu'une mise à jour est disponible (N."
+"B. d'autres extensions peuvent passer outre ce paramètre)."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:502
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:690
+msgid "Connect"
+msgstr "Se connecter"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:500
+msgid "Connecting..."
+msgstr "Connexion…"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:602
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:680
+msgid "Disconnect"
+msgstr "Déconnecter"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:600
+msgid "Disconnecting..."
+msgstr "Déconnexion…"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:288
+#, php-format
+msgid "Dismiss from main dashboard (for %s weeks)"
+msgstr "Masquer sur le tableau de bord (pur %s semaines)"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:688
+msgid "Email"
+msgstr "Courriel"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:978
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:983
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:1098
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:1103
+msgid "Errors occurred:"
+msgstr "Erreurs survenues :"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:530
+msgid ""
+"Has your licence expired, or have you used all your available licences "
+"elsewhere?"
+msgstr ""
+"Votre licence a-t-elle expirée ou avez-vous utilisées toutes vos licences "
+"disponibles ailleurs ?"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:327
+#, php-format
+msgid "It has been tested up to version %s."
+msgstr "Elle a été testée jusqu’à la version %s."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:485
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:515
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:689
+msgid "password"
+msgstr "mot de passe"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:685
+#, php-format
+msgid "Please enter your customer login to access updates for %s"
+msgstr ""
+"Veuillez renseigner vos identifiants pour bénéficier des mises à jour pour %s"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:301
+msgid "please renew"
+msgstr "veuillez renouveler"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:327
+#, php-format
+msgid ""
+"The installed version of %s has not been tested on your version of WordPress "
+"(%s)."
+msgstr ""
+"La version installée de %s n’a pas été testée avec votre version de "
+"WordPress (%s)."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:508
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:537
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:542
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:578
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:583
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:618
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:623
+msgid ""
+"The response from the remote site could not be decoded. (More information is "
+"recorded in the browser console)."
+msgstr ""
+"La réponse du site distant n’a pas pu être décodée. (Plus d’information est "
+"disponible dans la console du navigateur.)"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:73
+msgid ""
+"This site was previously using a licence also used by another WordPress "
+"install with a different URL (which most likely originates from one of the "
+"sites being created by duplicating the other) - this has resulted in the "
+"licence being disconnected from this site"
+msgstr ""
+"Ce site utilisait précédemment une licence également utilisée par une autre "
+"installation WordPress à une autre URL (ce qui provient certainement de la "
+"création d’un de ces sites par duplication d’un autre) - ceci a provoqué la "
+"déconnexion de la licence sur ce site."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:354
+#, php-format
+msgid "To maintain your access to support, %s."
+msgstr "Pour conserver votre accès à l’assistance, %s."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:335
+#, php-format
+msgid ""
+"To regain access to updates (including future features and compatibility "
+"with future WordPress releases) and support, %s."
+msgstr ""
+"Pour retrouver un accès aux mises à jour (incluant les futures "
+"fonctionnalités et la compatibilité avec les versions futures de WordPress) "
+"et à l'assistance, %s."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:352
+#, php-format
+msgid "To regain your access, %s."
+msgstr "Pour récupérer votre accès, %s."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:345
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:347
+#, php-format
+msgid ""
+"To retain your access, and maintain access to updates (including future "
+"features and compatibility with future WordPress releases) and support, %s."
+msgstr ""
+"Pour conserver votre accès et maintenir l'accès aux mises à jour (incluant "
+"les futures fonctionnalités et la compatibilité avec les versions futures de "
+"WordPress) et à l'assistance, %s."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:327
+msgid "Warning"
+msgstr "Attention"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:573
+msgid ""
+"When updates to this plugin are available, they will be automatically "
+"installed."
+msgstr ""
+"Lorsque des mises à jour de cette extension seront disponibles, elles seront "
+"installées automatiquement."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:575
+msgid ""
+"When updates to this plugin are available, they will not be automatically "
+"installed."
+msgstr ""
+"Lorsque des mises à jour de cette extension seront disponibles, elles ne "
+"seront pas installées automatiquement."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:677
+#, php-format
+msgid "You are connected to receive updates for %s (login: %s)"
+msgstr ""
+"Vous êtes connecté pour recevoir les mises à jour de %s (identifiant : %s)"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:524
+msgid "You have successfully connected for access to updates to this plugin."
+msgstr ""
+"Vous vous êtes connecté avec succès du système de mise à jour de cette "
+"extension."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:613
+msgid "You have successfully disconnected access to updates to this plugin."
+msgstr ""
+"Vous vous êtes déconnecté avec succès du système de mise à jour de cette "
+"extension."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:484
+#, php-format
+msgid "You need to enter both an email address and a %s"
+msgstr "Vous devez renseignez une adresse de courriel et un %s"
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:327
+msgid ""
+"You should update to make sure that you have a version that has been tested "
+"for compatibility."
+msgstr ""
+"Vous devriez mettre à jour pour vous assurer d’avoir une version dont la "
+"compatibilité a été testée."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:515
+#, php-format
+msgid "Your email address and %s were not recognised."
+msgstr "Votre courriel et %s n’ont pas été reconnus."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:608
+msgid ""
+"Your email address was not recognised. The connection information will be "
+"removed from this site."
+msgstr ""
+"Votre courriel n’a pas été reconnu. Les informations de connexion seront "
+"supprimées de ce site."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:530
+msgid ""
+"Your login was accepted, but no available entitlement for this plugin was "
+"found."
+msgstr ""
+"Votre identifiant a été accepté mais aucune souscription valable n’a été "
+"trouvée pour cette extension."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:352
+#, php-format
+msgid "Your paid access to %s support has expired."
+msgstr "Votre accès payant à l’assistance de %s a expiré."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:354
+#, php-format
+msgid "Your paid access to %s support will soon expire."
+msgstr "Votre accès payant à l’assistance de %s expire bientôt."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:337
+#, php-format
+msgid "Your paid access to %s updates for %s add-ons on this site has expired."
+msgstr ""
+"Votre accès payant aux mises à jour de %s pour les modules %s sur ce site a "
+"expiré."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:345
+#, php-format
+msgid ""
+"Your paid access to %s updates for %s of the %s add-ons on this site will "
+"soon expire."
+msgstr ""
+"Votre accès payant aux mises à jour de %s pour le s%s modules %s sur ce site "
+"expire bientôt."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:335
+#, php-format
+msgid ""
+"Your paid access to %s updates for this site has expired. You will no longer "
+"receive updates."
+msgstr ""
+"Votre accès payant aux mises à jour de %s sur ce site a expiré. Vous ne "
+"recevrez plus de mises à jour."
+
+#: vendor/davidanderson684/simba-plugin-manager-updater/class-udm-updater.php:347
+#, php-format
+msgid "Your paid access to %s updates for this site will soon expire."
+msgstr "Votre accès payant aux mises à jour de %s sur ce site expire bientôt."
