@@ -2,7 +2,7 @@
 	"name": "davidanderson684/simba-plugin-manager-updater",
 	"description": "This class is an updates checker and UI for WordPress plugins that are hosted using the Simba Plugin Manager plugin",
 	"require": {
-		"yahnis-elsts/plugin-update-checker": "dev-master as 4.13.x-stable"
+		"yahnis-elsts/plugin-update-checker": "4.13.1"
 	},
 	"repositories": [
 		{
