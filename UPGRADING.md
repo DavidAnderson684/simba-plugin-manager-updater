@@ -1,4 +1,7 @@
-This project follows semantic versioning principles.
+This project follows semantic versioning principles with a very minor requirement for minor releases:
+
+* For patch releases: e.g. 1.9.X and 1.9.Y should be entirely compatible (no code changes required) for all values of X and Y.
+* Minor releases (e.g. 1.A to 1.B) require you to update the name of the class that you instantiate. Otherise all code should remain compatible - but you should still read the notes below to understand changes made.
 
 # Upgrading from 1.7 to 1.8.
 

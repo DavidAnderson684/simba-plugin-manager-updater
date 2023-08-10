@@ -6,9 +6,9 @@ It is intended for plugins that require the supply of access credentials (a cust
 
 ## How to use this class
 
-There are various ways you can install this class, depending on how much composer you want to use or not use.
+There are two ways you can install this class, depending on whether you wish to use composer or not. We recommend using composer, so that your dependencies remain up-to-date without having to take manual actions.
 
-### 1. Install: Method one: Via composer
+### 1. Install: Method one: Via composer (recommended)
 
 If you do not already have a composer.json file, then create one:
 
@@ -24,17 +24,11 @@ If you already have one, then just add davidanderson684/simba-plugin-manager-upd
 
 Then, in the same directory, run "composer update" (assuming you already have composer installed).
 
-### 1. Install: Method two: Less composer, or entirely manually
+### 1. Install: Install manually (it's better to use composer, but if you insist...)
 
-Check out a copy of Yahnis' Elsts' plugin update class, version (https://github.com/YahnisElsts/plugin-update-checker). You can do this in two ways:
+Check out a copy of Yahnis' Elsts' plugin update class, version (https://github.com/YahnisElsts/plugin-update-checker).
 
-#### a. Via composer
-
-Whilst in this component's directory (where the composer.json file is), run "composer install". This will then create a sub-directory "vendor", with the plugin update class in vendor/yahnis-elsts/plugin-update-checker. It will be looked for there. You can keep it up to date with "composer update".
-
-#### b. Or, manually
-
-If you prefer to download manually, then download from https://github.com/YahnisElsts/plugin-update-checker and you can place it in a subdirectory "puc", relative to where this class is housed, such that the plugin updater class is in puc/plugin-update-checker.php. It will be looked for there if the composer directory does not exist.
+Download from https://github.com/YahnisElsts/plugin-update-checker and you can place it in a subdirectory "puc", relative to where this class is housed, such that the plugin updater class is in puc/plugin-update-checker.php. It will be looked for there if the composer directory does not exist. You should read the file `composer.json` which is part of this (the update manager class) project to see which versions are compatible (don't download an incompatible version).
 
 ### 2. Include the class in your plugin
 
