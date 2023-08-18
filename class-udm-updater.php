@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_8')):
 class Updraft_Manager_Updater_1_8 {
 
-	public $version = '1.8.19';
+	public $version = '1.8.20';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -40,7 +40,7 @@ class Updraft_Manager_Updater_1_8 {
 
     private $plugin_file;
     
-    private $connector_footer_added;
+    private $connector_footer_added = false;
 
 	/**
 	 * Constructor
@@ -708,7 +708,7 @@ class Updraft_Manager_Updater_1_8 {
 		$email = isset($options['email']) ? $options['email'] : '';
 		$duplicate_site = isset($options['was_previously_sharing_licence']) && false === $options['was_previously_sharing_licence'];
 
-		if (empty($this->connector_footer_added)) {
+		if (!$this->connector_footer_added) {
 			$this->connector_footer_added = true;
 			add_action('admin_footer', array($this, 'admin_footer'));
 		}
