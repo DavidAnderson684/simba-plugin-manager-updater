@@ -39,6 +39,8 @@ class Updraft_Manager_Updater_1_8 {
     private $ourdir;
 
     private $plugin_file;
+    
+    private $connector_footer_added;
 
 	/**
 	 * Constructor
