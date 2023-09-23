@@ -6,8 +6,8 @@ if (!defined('ABSPATH')) die('No direct access.');
 Licence: MIT / GPLv2+
 */
 
-if (!class_exists('Updraft_Manager_Updater_1_8')):
-class Updraft_Manager_Updater_1_8 {
+if (!class_exists('Updraft_Manager_Updater_1_9')):
+class Updraft_Manager_Updater_1_9 {
 
 	public $version = '1.8.20';
 
@@ -36,11 +36,11 @@ class Updraft_Manager_Updater_1_8 {
 	
 	private $plugin_data = null;
 
-    private $ourdir;
+	private $ourdir;
 
-    private $plugin_file;
-    
-    private $connector_footer_added = false;
+	private $plugin_file;
+	
+	private $connector_footer_added = false;
 
 	/**
 	 * Constructor
@@ -214,7 +214,7 @@ class Updraft_Manager_Updater_1_8 {
 		// Over-ride update mechanism for the plugin
 		$puc_dir = $this->get_puc_dir();
 		
-		if (!is_readable($puc_dir.'/plugin-update-checker.php') && !class_exists('Puc_v4_Factory')) return;
+		if (!is_readable($puc_dir.'/plugin-update-checker.php') && !class_exists('YahnisElsts\PluginUpdateChecker\v5\PucFactory')) return;
 
 		$options = $this->get_option($this->option_name);
 		
@@ -222,7 +222,7 @@ class Updraft_Manager_Updater_1_8 {
 		
 		if (!$email && $this->require_login) return;
 		
-		// Load the file even if the Puc_v4_Factory class is already around, as this may get us a later version / avoid a really old + incompatible one
+		// Load the file even if the PucFactory class is already around, as this may get us a later version / avoid a really old + incompatible one
 		if (file_exists($puc_dir.'/plugin-update-checker.php')) include_once($puc_dir.'/plugin-update-checker.php');
 		
 		if ($this->auto_backoff) add_filter('puc_check_now-'.$this->slug, array($this, 'puc_check_now'), 10, 3);
@@ -230,8 +230,8 @@ class Updraft_Manager_Updater_1_8 {
 		add_filter('puc_retain_fields-'.$this->slug, array($this, 'puc_retain_fields'));
 		// add_filter('puc_request_info_options-'.$this->slug, array($this, 'puc_request_info_options'));
 
-		if (class_exists('Puc_v4_Factory')) {
-			$this->plug_updatechecker = Puc_v4_Factory::buildUpdateChecker($this->url, WP_PLUGIN_DIR.'/'.$this->relative_plugin_file, $this->slug, $this->interval_hours);
+		if (class_exists('YahnisElsts\PluginUpdateChecker\v5\PucFactory')) {
+			$this->plug_updatechecker = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker($this->url, WP_PLUGIN_DIR.'/'.$this->relative_plugin_file, $this->slug, $this->interval_hours);
 			$this->plug_updatechecker->addQueryArgFilter(array($this, 'updater_queryargs_plugin'));
 			if ($this->debug) $this->plug_updatechecker->debugMode = true;
 		}
