@@ -10,19 +10,13 @@ There are two ways you can install this class, depending on whether you wish to 
 
 ### 1. Install: Method one: Via composer (recommended)
 
-If you do not already have a composer.json file, then create one. Note the 'repositories' entry, which forces use of a fork for a dependency which resolves some deprecation messages on PHP 8.2. It is not compulsory to use this fork if you do not want to.
+If you do not already have a composer.json file, then create one.
 
 ```
 {
     "require": {
 		"davidanderson684/simba-plugin-manager-updater": "1.9.*"
-    },
-    "repositories": [
-		{
-			"type": "vcs",
-			"url": "https://github.com/DavidAnderson684/plugin-update-checker"
-		}
-    ]
+    }
 }
 ```
 
