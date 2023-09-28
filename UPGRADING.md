@@ -4,7 +4,7 @@ This project follows semantic versioning principles with a very minor requiremen
 * Minor releases (e.g. 1.A to 1.B) require you to update the name of the class that you instantiate. Otherise all code should remain compatible - but you should still read the notes below to understand changes made.
 
 # Upgrading from 1.8 to 1.9.
-You should alter the class name that you instantiate to Updraft_Manager_Updater_1_9. The minimum PHP version required from version 1.9 onwards is PHP 5.6 or higher; therefore, if you need to still support earlier versions, then you should remain with the 1.8 series.
+You should alter the class name that you instantiate to Updraft_Manager_Updater_1_9. The minimum PHP version required from version 1.9 onwards is PHP 5.6 or higher; therefore, if you need to still support earlier versions, then you should remain with the 1.8 series. Also, if your `composer.json` file was using the fork of `yahniselsts/plugin-update-checker` at https://github.com/DavidAnderson684/plugin-update-checker, then you should remove this, since that fork is only needed and suitable for earlier releases.
 
 # Upgrading from 1.7 to 1.8.
 
