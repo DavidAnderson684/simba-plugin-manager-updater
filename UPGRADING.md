@@ -3,6 +3,9 @@ This project follows semantic versioning principles with a very minor requiremen
 * For patch releases: e.g. 1.9.X and 1.9.Y should be entirely compatible (no code changes required) for all values of X and Y.
 * Minor releases (e.g. 1.A to 1.B) require you to update the name of the class that you instantiate. Otherise all code should remain compatible - but you should still read the notes below to understand changes made.
 
+# Upgrading from 1.8 to 1.9.
+You should alter the class name that you instantiate to Updraft_Manager_Updater_1_9. The minimum PHP version required from version 1.9 onwards is PHP 5.6 or higher; therefore, if you need to still support earlier versions, then you should remain with the 1.8 series.
+
 # Upgrading from 1.7 to 1.8.
 
 You should alter the class name that you instantiate to Updraft_Manager_Updater_1_8. Also, the constructor signature has altered for more future flexibility. The first three parameters (mothership URL, owner UID, relative plugin file) are the same; but all parameters after that are replaced by a single (optional) fourth parameter, $options. All options are now passed via this array via key/value pairs. The previous parameters auto_backoff, debug, interval_hours are now (optional) keys in this array. A fourth option, require_login (boolean), is also available. It defaults in 1.8.0 to true (retaining the previous behaviour), but may change in future, so set it if you have a preference. If false, then updates checks will be made even if no credentials have (yet) been provided. This will enable showing updates information (but not actual updating) even when people have not authenticated, which may motivate them to authenticate.
