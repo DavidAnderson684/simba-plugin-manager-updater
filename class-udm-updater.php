@@ -9,7 +9,7 @@ Licence: MIT / GPLv2+
 if (!class_exists('Updraft_Manager_Updater_1_9')):
 class Updraft_Manager_Updater_1_9 {
 
-	public $version = '1.9.1';
+	public $version = '1.9.2';
 
 	public $relative_plugin_file;
 	public $slug;
@@ -720,7 +720,7 @@ class Updraft_Manager_Updater_1_9 {
 		<div style="margin: 10px;  min-height: 36px;" class="udmupdater_box_<?php echo esc_attr($this->slug);?>">
 			<?php if ($this->is_connected()) { ?>
 			<div style="float: left; margin-right: 14px; margin-top: 4px;">
-				<em><?php echo apply_filters('udmupdater_entercustomerlogin', sprintf(__('You are connected to receive updates for %s (login: %s)', 'udmupdater'), $plugin_label, htmlspecialchars($email)), $this->get_plugin_data(), $this->slug); ?></em>: 
+				<em><?php echo apply_filters('udmupdater_you_are_connected', sprintf(__('You are connected to receive updates for %s (login: %s)', 'udmupdater'), $plugin_label, htmlspecialchars($email)), $this->get_plugin_data(), $this->slug); ?></em>: 
 			</div>
 			<div class="udmupdater_userpassform udmupdater_userpassform_<?php echo esc_attr($this->slug);?>" style="float:left;">
 				<button class="button button-primary udmupdater-disconnect"><?php _e('Disconnect', 'udmupdater');?></button>
@@ -741,7 +741,7 @@ class Updraft_Manager_Updater_1_9 {
 				?>
 				<div class="udmupdater_autoupdate" style="clear:left;">
 					<input type="checkbox" id="<?php echo esc_attr($checkbox_id);?>" <?php if ($this->is_automatic_updating_enabled()) echo 'checked="checked"';?>>
-					<label for="<?php echo esc_attr($checkbox_id);?>"><?php echo apply_filters('udmupdater_entercustomerlogin', __('Automatically update as soon as an update becomes available (N.B. other plugins can over-ride this setting).', 'udmupdater'), $this->slug);?></label>
+					<label for="<?php echo esc_attr($checkbox_id);?>"><?php echo apply_filters('udmupdater_automatically_update_when_available', __('Automatically update as soon as an update becomes available (N.B. other plugins can over-ride this setting).', 'udmupdater'), $this->slug);?></label>
 				</div>
 			<?php } ?>
 		</div>
