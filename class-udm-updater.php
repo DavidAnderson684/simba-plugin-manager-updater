@@ -95,6 +95,7 @@ class Updraft_Manager_Updater_1_9 {
 		add_action("after_plugin_row_$relative_plugin_file", array($this, 'after_plugin_row'), 10, 2 );
 		add_action('load-plugins.php', array($this, 'load_plugins_php'));
 		add_action('core_upgrade_preamble', array($this, 'core_upgrade_preamble'));
+		add_action('update_site_option_'.$this->plug_updatechecker->optionName, array($this, 'force_update'));
 		
 		/**
 		 * Maintain compatibility on all versions between WordPress and UDM, specifically since WordPress 5.5
@@ -111,6 +112,29 @@ class Updraft_Manager_Updater_1_9 {
 		}
 
 		add_action('wp_loaded', array($this, 'maybe_force_checking_for_updates'));
+	}
+
+	/**
+	 * This function will force update a plugin based on force_update parameter from simba plugin
+	 *
+	 * @return Void
+	 */
+	public function force_update() {
+		$update = $this->plug_updatechecker->getUpdate();
+		if ($update) {
+			$download_url = $update->download_url;
+			if (str_contains($download_url, 'force_update=1')) {
+				$this->enable_automatic_updates();
+				$updates = get_site_transient('update_plugins');
+				$this->plug_updatechecker->injectUpdate($updates);
+				wp_maybe_auto_update();
+				if (!is_plugin_active($this->relative_plugin_file)) {
+					activate_plugin($this->relative_plugin_file);
+				}	
+				$this->disable_automatic_updates();
+				
+			}
+		}
 	}
 
 	/**
