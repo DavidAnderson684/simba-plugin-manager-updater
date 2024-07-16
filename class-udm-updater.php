@@ -259,15 +259,18 @@ class Updraft_Manager_Updater_1_9 {
 			}
 		}
 
-		if (!isset($item->slug) || $item->slug != $this->slug || !$this->allow_auto_updates) return $update;
+		if (version_compare($wp_version, '5.5', '<')) {
 
-		$option_auto_update_settings = (array) get_site_option('auto_update_plugins', array());
-		
-		$update = in_array($item->plugin, $option_auto_update_settings, true);
-		
-		if ($this->debug) error_log("udm_updater: ".$this->slug." auto update decision: ".$update);
-		
-		return $update;
+			if (!isset($item->slug) || $item->slug != $this->slug || !$this->allow_auto_updates) return $update;
+
+			$option_auto_update_settings = (array) get_site_option('auto_update_plugins', array());
+			
+			$update = in_array($item->plugin, $option_auto_update_settings, true);
+			
+			if ($this->debug) error_log("udm_updater: ".$this->slug." auto update decision: ".$update);
+			
+			return $update;
+		}
 	}
 	
 	/**
