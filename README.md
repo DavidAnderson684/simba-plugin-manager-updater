@@ -24,6 +24,8 @@ If you already have one, then just add davidanderson684/simba-plugin-manager-upd
 
 Then, in the same directory, run "composer update" (assuming you already have composer installed).
 
+Note that this project's versioning principles are that any A.B.C release is compatible with any other A.B.D release; there are no further guarantees. Thus, if you use the above recommended line in composer, then any composer update operations will only update to compatible versions. If you choose to use something else then you must look to any consequences of that yourself.
+
 ### 1. Install: Install manually (it's better to use composer, but if you insist...)
 
 Check out a copy of Yahnis' Elsts' plugin update class, version (https://github.com/YahnisElsts/plugin-update-checker).
