@@ -1002,7 +1002,8 @@ class Updraft_Manager_Updater_1_9 {
 				'data' => 'Not connected (no email found)'
 			));
 		} else {
-			$result = wp_remote_post($this->url.'&udm_action=releaseaddon&slug='.urlencode($_POST['slug']).'&e='.urlencode($options['email']),
+			$slug = (!empty($_POST['slug'])) ? $_POST['slug'] : $this->slug;
+			$result = wp_remote_post($this->url.'&udm_action=releaseaddon&slug='.urlencode($slug).'&e='.urlencode($options['email']),
 				apply_filters('udmupdater_wp_api_options', array(
 					'timeout' => 10,
 					'body' => array(
