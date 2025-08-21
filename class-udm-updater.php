@@ -435,7 +435,7 @@ class Updraft_Manager_Updater_1_9 {
 	public function puc_request_info_result($info) {
 		if ($this->is_connected() && empty($info->toStdClass()->extraProperties['x-spm-connected'])) {
 			$this->disconnect();
-			if ($this->debug) error_log("udm_updater: ".$this->slug." - the site was disconnected because its license entitlement has been removed.");
+			if ($this->debug) error_log("udm_updater: ".$this->slug." - the site was disconnected because the license is invalid.");
 		}
 		return $info;
 	}
