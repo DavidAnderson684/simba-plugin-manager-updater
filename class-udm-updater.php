@@ -433,7 +433,8 @@ class Updraft_Manager_Updater_1_9 {
 	 * @return YahnisElsts\PluginUpdateChecker\v5p5\Plugin\PluginInfo
 	 */
 	public function puc_request_info_result($info) {
-		if ($this->is_connected() && empty($info->toStdClass()->extraProperties['x-spm-connected'])) {
+		$extra_properties = $info->toStdClass()->extraProperties;
+		if ($this->is_connected() && !empty($extra_properties['x-spm-version']) && version_compare($extra_properties['x-spm-version'], '1.11.12', '>') && empty($extra_properties['x-spm-connected'])) {
 			$this->disconnect();
 			if ($this->debug) error_log("udm_updater: ".$this->slug." - the site was disconnected because the license is invalid.");
 		}
