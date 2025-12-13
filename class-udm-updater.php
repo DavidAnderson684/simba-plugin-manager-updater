@@ -104,12 +104,8 @@ class Updraft_Manager_Updater_1_9 {
 		if (empty($udm_options['wp55_option_migrated'])) {
 			$this->replace_auto_update_option();
 		}
-
-		include(ABSPATH.WPINC.'/version.php');
-		if (version_compare($wp_version, '5.5', '<')) {
-			add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 20, 2);
-		}
-
+		
+		add_filter('auto_update_plugin', array($this, 'auto_update_plugin'), 20, 2);
 		add_action('wp_loaded', array($this, 'maybe_force_checking_for_updates'));
 	}
 
@@ -256,16 +252,25 @@ class Updraft_Manager_Updater_1_9 {
 	 * @return Boolean
 	 */
 	public function auto_update_plugin($update, $item) {
+		
+		if (isset($item->slug) && $item->slug == $this->slug) {			
+			if (!empty($item->package) && str_contains( $item->package, 'force_update=1')){
+				return true;
+			}
+		}
 
-		if (!isset($item->slug) || $item->slug != $this->slug || !$this->allow_auto_updates) return $update;
+		if (version_compare($wp_version, '5.5', '<')) {
 
-		$option_auto_update_settings = (array) get_site_option('auto_update_plugins', array());
-		
-		$update = in_array($item->plugin, $option_auto_update_settings, true);
-		
-		if ($this->debug) error_log("udm_updater: ".$this->slug." auto update decision: ".$update);
-		
-		return $update;
+			if (!isset($item->slug) || $item->slug != $this->slug || !$this->allow_auto_updates) return $update;
+
+			$option_auto_update_settings = (array) get_site_option('auto_update_plugins', array());
+			
+			$update = in_array($item->plugin, $option_auto_update_settings, true);
+			
+			if ($this->debug) error_log("udm_updater: ".$this->slug." auto update decision: ".$update);
+			
+			return $update;
+		}
 	}
 	
 	/**
