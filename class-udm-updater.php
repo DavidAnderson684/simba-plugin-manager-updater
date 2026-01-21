@@ -460,7 +460,7 @@ class Updraft_Manager_Updater_1_9 {
 	 *
 	 * @return Boolean
 	 */
-	protected function is_connected() {
+	public function is_connected() {
 		$option = $this->get_option($this->option_name);
 		return empty($option['email']) ? false : true;
 	}
