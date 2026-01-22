@@ -228,6 +228,7 @@ class Updraft_Manager_Updater_1_9 {
 		if ($this->auto_backoff) add_filter('puc_check_now-'.$this->slug, array($this, 'puc_check_now'), 10, 3);
 
 		add_filter('puc_retain_fields-'.$this->slug, array($this, 'puc_retain_fields'));
+		add_filter('puc_request_info_result-'.$this->slug, array($this, 'puc_request_info_result'));
 		// add_filter('puc_request_info_options-'.$this->slug, array($this, 'puc_request_info_options'));
 
 		if (class_exists('YahnisElsts\PluginUpdateChecker\v5\PucFactory')) {
@@ -421,6 +422,23 @@ class Updraft_Manager_Updater_1_9 {
 		if (!is_array($f)) return $f;
 		if (!in_array('extraProperties', $f)) $f[] = 'extraProperties';
 		return $f;
+	}
+
+	/**
+	 * WordPress filter puc_request_info_result-(slug)
+	 * In this filter, we disconnect the site that has no license after receiving the plugin update information from the updates server.
+	 *
+	 * @param YahnisElsts\PluginUpdateChecker\v5p5\Plugin\PluginInfo $info - the plugin update info from the updates server
+	 *
+	 * @return YahnisElsts\PluginUpdateChecker\v5p5\Plugin\PluginInfo
+	 */
+	public function puc_request_info_result($info) {
+		$extra_properties = $info->toStdClass()->extraProperties;
+		if ($this->is_connected() && !empty($extra_properties['x-spm-version']) && version_compare($extra_properties['x-spm-version'], '1.11.12', '>') && empty($extra_properties['x-spm-connected'])) {
+			$this->disconnect();
+			if ($this->debug) error_log("udm_updater: ".$this->slug." - the site was disconnected because the license is invalid.");
+		}
+		return $info;
 	}
 
 	/**
@@ -985,7 +1003,8 @@ class Updraft_Manager_Updater_1_9 {
 				'data' => 'Not connected (no email found)'
 			));
 		} else {
-			$result = wp_remote_post($this->url.'&udm_action=releaseaddon&slug='.urlencode($_POST['slug']).'&e='.urlencode($options['email']),
+			$slug = (!empty($_POST['slug'])) ? $_POST['slug'] : $this->slug;
+			$result = wp_remote_post($this->url.'&udm_action=releaseaddon&slug='.urlencode($slug).'&e='.urlencode($options['email']),
 				apply_filters('udmupdater_wp_api_options', array(
 					'timeout' => 10,
 					'body' => array(
