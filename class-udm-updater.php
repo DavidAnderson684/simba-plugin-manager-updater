@@ -120,6 +120,7 @@ class Updraft_Manager_Updater_1_9 {
 	 */
 	public function maybe_force_checking_for_updates() {
 		if (!isset($_REQUEST['force_udm_check']) || '' === $_REQUEST['force_udm_check']) return;
+		if (!current_user_can('update_plugins')) return;
 		$slug = sanitize_text_field($_REQUEST['force_udm_check']);
 		if ($this->slug !== $slug) return;
 		header('Content-type: application/json');
@@ -404,7 +405,9 @@ class Updraft_Manager_Updater_1_9 {
 		add_action('all_admin_notices', array($this, 'admin_notices'));
 
 		// Refresh, if specifically requested
-		if (('options-general.php' == $pagenow) || (is_multisite() && 'settings.php' == $pagenow) && isset($_GET['udm_refresh'])) {
+		if (('options-general.php' == $pagenow || (is_multisite() && 'settings.php' == $pagenow))
+			&& isset($_GET['udm_refresh'])
+			&& current_user_can('update_plugins')) {
 			if ($this->plug_updatechecker) $this->plug_updatechecker->checkForUpdates();
 		}
 
