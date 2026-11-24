@@ -120,10 +120,8 @@ class Updraft_Manager_Updater_1_9 {
 	 */
 	public function maybe_force_checking_for_updates() {
 		if (!isset($_REQUEST['force_udm_check']) || '' === $_REQUEST['force_udm_check']) return;
-		if (!current_user_can('update_plugins')) return;
 		$slug = sanitize_text_field($_REQUEST['force_udm_check']);
 		if ($this->slug !== $slug) return;
-		header('Content-type: application/json');
 		$restriction = $this->get_option('udm_manual_check_for_updates_restriction');
 		if (!is_array($restriction)) $restriction = array();
 		$time_now = time();
@@ -137,6 +135,8 @@ class Updraft_Manager_Updater_1_9 {
 		} elseif ($wp_current_day == $restriction[$slug]['current_day'] && (int) $restriction[$slug]['count'] < 2) {
 			$restriction[$slug]['count'] = 2;
 		} else {
+			// Unauthenticated callers (e.g. the renewal ping from the store) get a silent return; authenticated users get the JSON error.
+			if (!current_user_can('update_plugins')) return;
 			echo json_encode(array(
 				'code' => 'force_checking_limit_exceeded',
 				'data' => $restriction[$slug]['count'],
@@ -144,6 +144,11 @@ class Updraft_Manager_Updater_1_9 {
 			exit;
 		}
 		$this->update_option('udm_manual_check_for_updates_restriction', $restriction);
+		// Unauthenticated callers (e.g. the store's post-renewal ping) only clear the cached state so PUC re-checks shortly; they do not trigger a full outbound check.
+		if (!current_user_can('update_plugins')) {
+			if ($this->plug_updatechecker) $this->plug_updatechecker->resetUpdateState();
+			return;
+		}
 		$this->plug_updatechecker->checkForUpdates();
 		echo json_encode(array(
 			'code' => 'success',
